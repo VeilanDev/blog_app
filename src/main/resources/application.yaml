@@ -1,0 +1,59 @@
+# ============================================
+# БАЗОВЫЕ НАСТРОЙКИ SPRING
+# ============================================
+spring:
+  application:
+    name: blog-app
+  server:
+    port: 8080
+
+  # JPA/Hibernate настройки
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  # ============================================
+  # НАСТРОЙКИ KAFKA
+  # ============================================
+  kafka:
+    # Адрес Kafka брокера
+    bootstrap-servers: localhost:9092 #в продакшене поменять на реальный адрес кластера
+
+    # Настройки продюсера (отправитель)
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      retries: 3
+      acks: all
+
+    # Настройки консьюмера (получатель)
+    consumer:
+      group-id: blog-app-group #в продакшене менять на уникальное имя приложения
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*" #в продакшене менять на конкретные пакеты. напимер: org.example.какой-то_пакет
+
+    # Настройки слушателя (для ручного подтверждения)
+    listener:
+      ack-mode: manual
+
+  # ============================================
+  # НАСТРОЙКИ THYMELEAF
+  # ============================================
+  thymeleaf:
+    cache: false #в продакшене менять на true
+    encoding: UTF-8
+    mode: HTML
