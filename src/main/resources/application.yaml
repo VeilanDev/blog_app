@@ -7,6 +7,15 @@ spring:
   server:
     port: 8080
 
+  web:
+    resources:
+      static-locations:
+        - classpath:/static/
+        - classpath:/public/
+        - classpath:/resources/
+        - classpath:/META-INF/resources/
+      add-mappings: true
+
   # JPA/Hibernate настройки
   jpa:
     hibernate:

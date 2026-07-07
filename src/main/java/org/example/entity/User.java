@@ -49,10 +49,10 @@ public class User {
     private LocalDateTime updatedAt;
 
     public User() {}
-    public User(String login, String email, String password) {
+    public User(String login, String email, String rawPassword) {
         this.login = login;
         this.email = email;
-        setPasswordHash(password);
+        setPasswordHash(rawPassword);
         this.role = Role.USER;
     }
 
