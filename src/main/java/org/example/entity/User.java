@@ -12,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class Usr {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,22 +48,12 @@ public class Usr {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Usr() {}
-    public Usr(String login, String email, String password) {
+    public User() {}
+    public User(String login, String email, String password) {
         this.login = login;
         this.email = email;
         setPasswordHash(password);
         this.role = Role.USER;
-    }
-
-    public void addUserPost(Post post) {
-        posts.add(post);
-        post.setAuthor(this);
-    }
-
-    public void removeUserPost(Post post) {
-        posts.remove(post);
-        post.setAuthor(null);
     }
 
     public Long getId() {

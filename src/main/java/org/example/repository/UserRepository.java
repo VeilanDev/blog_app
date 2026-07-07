@@ -1,17 +1,17 @@
 package org.example.repository;
 
-import org.example.entity.Usr;
+import org.example.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<Usr, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<Usr> findByLogin(String login);
-    Optional<Usr> findByEmail(String email);
+    Optional<User> findByLogin(String login);
+    Optional<User> findByEmail(String email);
 
-    List<Usr> findByNameContainingIgnoreCase(String namePart);
-    List<Usr> findByNameContainingIgnoreCaseOrderByNameAsc(String namePart);
-    List<Usr> findByNameStartingWith(String namePart);
+    List<User> findByNameContainingIgnoreCase(String namePart);
+    List<User> findByNameContainingIgnoreCaseOrderByNameAsc(String namePart);
+    List<User> findByNameStartingWith(String namePart);
 }

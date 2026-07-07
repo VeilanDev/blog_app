@@ -24,7 +24,7 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "author_id")
-    private Usr author;
+    private User author;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -49,7 +49,7 @@ public class Post {
         return id;
     }
 
-    public Usr getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
@@ -73,7 +73,7 @@ public class Post {
         return likes;
     }
 
-    public void setAuthor(Usr author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 
