@@ -1,0 +1,334 @@
+/* ==========================================
+   ГЛОБАЛЬНЫЙ СБРОС ОТСТУПОВ
+   ========================================== */
+
+body {
+    margin: 0;
+}
+
+/* ==========================================
+   ВЕРХНЯЯ ПАНЕЛЬ НАВИГАЦИИ
+   ========================================== */
+
+/* Основной контейнер */
+.navbar {
+    background: #7ebefb;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Внутренний контейнер */
+.navbar-container {
+    width: 100%;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+/* ==========================================
+   ЛОГОТИП
+   ========================================== */
+
+.navbar-brand a {
+    color: #1a1a2e;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-weight: bold;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    transition: color 0.2s ease;
+    padding-left: 2rem;
+}
+
+.navbar-brand a:hover {
+    color: #4a6cf7;
+}
+
+/* ==========================================
+   БЛОК ПОЛЬЗОВАТЕЛЯ
+   ========================================== */
+
+.navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-right: 2rem;
+}
+
+/* Информация о пользователе */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #1a1a2e;
+    font-size: 0.9rem;
+}
+
+/* Имя пользователя */
+.user-name {
+    font-weight: 600;
+    color: #1a1a2e;
+    font-size: 0.95rem;
+}
+
+/* Логин пользователя */
+.user-login {
+    color: #6b6b80;
+    font-size: 0.85rem;
+}
+
+/* ==========================================
+   КНОПКА ВЫХОДА
+   ========================================== */
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+}
+
+.btn-logout {
+    padding: 0.45rem 1.2rem;
+    background: transparent;
+    color: #dc3545;
+    border: 1.5px solid #dc3545;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.btn-logout:hover {
+    background: #dc3545;
+    color: #ffffff;
+}
+
+.btn-logout:active {
+    transform: scale(0.96);
+}
+
+/* ==========================================
+   ФОРМА СОЗДАНИЯ ПОСТА
+   ========================================== */
+
+.new-post-form {
+    background: #ffffff;
+    border: 1px solid #eaeaea;
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 800px;
+    min-width: 320px;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.new-post-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.new-post-form label {
+    display: block;
+    font-weight: 600;
+    color: #1a1a2e;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+}
+
+.new-post-form input[type="text"],
+.new-post-form textarea {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.25s ease;
+    box-sizing: border-box;
+}
+
+.new-post-form input[type="text"]:focus,
+.new-post-form textarea:focus {
+    outline: none;
+    border-color: #4a6cf7;
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.12);
+}
+
+.new-post-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.new-post-form input[type="file"] {
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+.new-post-form .btn-submit {
+    padding: 0.6rem 2rem;
+    background: #4a6cf7;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.new-post-form .btn-submit:hover {
+    background: #3a5cd9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 108, 247, 0.3);
+}
+
+.new-post-form .btn-submit:active {
+    transform: scale(0.97);
+}
+/* ==========================================
+   СПИСОК ПОСТОВ
+   ========================================== */
+
+.post-list-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #4a6cf7;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-width: 800px;
+    min-width: 320px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+.post-list li {
+    margin-bottom: 1.2rem;
+}
+
+/* ==========================================
+   КАРТОЧКА ПОСТА
+   ========================================== */
+
+.post-item {
+    background: #ffffff;
+    border: 1px solid #eaeaea;
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+}
+
+.post-item:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Шапка поста */
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.post-author {
+    font-weight: 600;
+    color: #1a1a2e;
+    font-size: 0.95rem;
+}
+
+.post-date {
+    color: #6b6b80;
+    font-size: 0.8rem;
+}
+
+/* Содержание поста */
+.post-content {
+    margin-bottom: 0.8rem;
+}
+
+.post-text {
+    color: #1a1a2e;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Изображение поста */
+.post-image {
+    margin-top: 0.6rem;
+}
+
+.post-image img {
+    max-width: 100%;
+    max-height: 350px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* Подвал поста */
+.post-footer {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-top: 0.8rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.post-likes {
+    color: #6b6b80;
+    font-size: 0.85rem;
+}
+
+.post-likes span {
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+/* ==========================================
+   НЕТ ПОСТОВ
+   ========================================== */
+
+.no-posts {
+    background: #f8f9fa;
+    border: 1px dashed #d0d0d0;
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: #6b6b80;
+    font-size: 1rem;
+    max-width: 800px;
+    min-width: 320px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}

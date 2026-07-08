@@ -1,13 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
+
+    <link rel="stylesheet" th:href="@{/css/home.css}"/>
 </head>
 
 <body>
 
-<a>Это страница home</a>
+<header class="navbar">
+    <div class="navbar-container">
+        <div class="navbar-brand">
+            <a th:href="@{/home}">InstBlog</a>
+        </div>
+
+        <!-- Имя/логин пользователя -->
+        <div class="navbar-user" sec:authorize="isAuthenticated()">
+            <div class="user-info">
+                <span class="user-name" th:text="${userName}">Имя</span>
+
+                <span class="user-login" th:text="${userLogin}">логин</span>
+            </div>
+
+            <!-- Кнопка выхода -->
+            <form th:action="@{/logout}" method="post" class="navbar-actions" >
+                <button type="submit" class="btn-logout">Выйти</button>
+            </form>
+        </div>
+
+    </div>
+</header>
+
+<div class="new-post-form">
+    <form th:action="@{/posts/create}" method="post" enctype="multipart/form-data">
+        <!-- CSRF токен -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <div class="form-group">
+            <label for="postContent">Содержание</label>
+            <textarea id="postContent"
+                      name="content"
+                      rows="5"
+                      placeholder="Напишите что-нибудь интересное..."
+                      required></textarea>
+        </div>
+
+        <div class="form-group" hidden>
+            <label for="postImage">Изображение (необязательно)</label>
+            <input type="file"
+                   id="postImage"
+                   name="image"
+                   accept="image/*" />
+        </div>
+
+        <button type="submit" class="btn-submit">Опубликовать</button>
+    </form>
+</div>
+
+<div class="post-list-title">Ваши публикации</div>
+<ul class="post-list">
+    <li th:each="post : ${posts}" th:if="${posts != null && !posts.isEmpty}">
+        <div class="post-item">
+            <div class="post-header">
+                <span class="post-author" th:text="${post.author.login}">Автор</span>
+                <span class="post-date" th:text="${#temporals.format(post.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2024 12:00</span>
+            </div>
+
+            <div class="post-content">
+                <p class="post-text" th:text="${post.text}">Текст публикации</p>
+            </div>
+
+            <div class="post-image" th:if="${post.imagePath != null}">
+                <img th:src="@{${post.imagePath}}" alt="Изображение к посту" />
+            </div>
+
+            <div class="post-footer">
+                <span class="post-likes">❤️ <span th:text="${post.likes}">0</span></span>
+            </div>
+        </div>
+    </li>
+</ul>
 
 </body>
 
