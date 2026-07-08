@@ -6,7 +6,7 @@
 # Требования
 
 ---
-# Регистрация (/registration)
+# Регистрация (/register)
 
 - name, login, email, password
 - login, email являются unique
