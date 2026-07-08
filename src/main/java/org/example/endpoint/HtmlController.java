@@ -20,11 +20,6 @@ public class HtmlController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/login")
-    public String toLogin() {
-        return "login";
-    }
-
     @GetMapping("/home")
     public String toHome(
             Model model,

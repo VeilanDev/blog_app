@@ -44,4 +44,9 @@ public class RegistrationController {
         }
 
     }
+
+    @GetMapping("/login")
+    public String toLogin() {
+        return "login";
+    }
 }
