@@ -5,7 +5,6 @@
     <title>Login</title>
 
     <link rel="stylesheet" th:href="@{/css/login.css}"/>
-    <!-- th:href="@{/css/login.css}" href="/css/login.css"-->
 
 </head>
 
@@ -16,17 +15,21 @@
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
         <div class="form-group">
-            <label for="userLogin">Login</label>
-            <input type="text" id="userLogin" name="username" autocomplete="username" required/>
+            <label for="userLogin">Логин</label>
+            <input type="text" id="userLogin" name="username" autocomplete="username" placeholder="Введите логин" required/>
         </div>
 
         <div class="form-group">
-            <label for="userPassword">Password</label>
-            <input type="password" id="userPassword" name="password" autocomplete="current-password" required>
+            <label for="userPassword">Пароль</label>
+            <input type="password" id="userPassword" name="password" autocomplete="current-password" placeholder="Введите пароль" required>
         </div>
 
         <button type="submit" class="btn-login">Войти</button>
     </form>
+
+    <div class="register-link">
+        Нет аккаунта? <a th:href="@{/register}">Зарегистрироваться</a>
+    </div>
 </div>
 
 </body>

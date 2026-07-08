@@ -126,3 +126,61 @@ body {
 .register-link a:hover {
     text-decoration: underline;
 }
+
+
+/* ==========================================
+   ЗАГОЛОВОК
+   ========================================== */
+
+.login-container h2 {
+    text-align: center;
+    color: #1a1a2e;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+/* ==========================================
+   СООБЩЕНИЕ ОБ ОШИБКЕ
+   ========================================== */
+
+.error-message {
+    background: #fde8e8;
+    color: #dc3545;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    margin-bottom: 1.2rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* ==========================================
+   ССЫЛКА НА ВХОД
+   ========================================== */
+
+.register-link {
+    text-align: center;
+    margin-top: 1.2rem;
+    font-size: 0.9rem;
+    color: #6b6b80;
+}
+
+.register-link a {
+    color: #4a6cf7;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================
+   ПЛЕЙСХОЛДЕРЫ
+   ========================================== */
+
+.form-group input::placeholder {
+    color: #aaa;
+    font-size: 0.9rem;
+}

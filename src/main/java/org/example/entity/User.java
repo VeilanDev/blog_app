@@ -32,7 +32,7 @@ public class User {
     private String passwordHash;
 
     @Column(name = "role", nullable = false, length = 128)
-    private Role role;
+    private String role;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
@@ -49,11 +49,13 @@ public class User {
     private LocalDateTime updatedAt;
 
     public User() {}
-    public User(String login, String email, String rawPassword) {
+    public User(String login, String email, String passwordHash) {
+        this.name = login;
         this.login = login;
         this.email = email;
-        setPasswordHash(rawPassword);
-        this.role = Role.USER;
+        this.passwordHash = passwordHash;
+        this.role = Role.USER.name();
+        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -76,7 +78,7 @@ public class User {
         return passwordHash;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
@@ -100,11 +102,11 @@ public class User {
         this.login = login;
     }
 
-    public void setPasswordHash(String rawPassword) {
-        this.passwordHash = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 
