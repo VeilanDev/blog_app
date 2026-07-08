@@ -35,6 +35,7 @@ public class User {
     private String role;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt DESC")
     private List<Post> posts = new ArrayList<>();
 
     @Column(name = "user_hash")

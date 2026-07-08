@@ -34,15 +34,14 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "likes")
-    private Integer likes;
+    @Column(name = "likes", nullable = false)
+    private Integer likes = 0;
 
     public Post() {}
     public Post(String text, String imagePath) {
         this.text = text;
         this.imagePath = imagePath;
-        this.createdAt = null; //дата создания публикации
-        this.likes = 0;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {

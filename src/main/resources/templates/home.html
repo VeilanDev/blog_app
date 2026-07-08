@@ -33,14 +33,15 @@
     </div>
 </header>
 
-<div class="new-post-form">
-    <form th:action="@{/posts/create}" method="post" enctype="multipart/form-data">
+<div class="new-post-form" th:if="${loginUserPage == #authentication.getName()}">
+    <form th:action="@{/posts/create}" th:object="${post}" method="post" enctype="multipart/form-data">
         <!-- CSRF токен -->
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
         <div class="form-group">
             <label for="postContent">Содержание</label>
-            <textarea id="postContent"
+            <textarea th:field="*{text}"
+                      id="postContent"
                       name="content"
                       rows="5"
                       placeholder="Напишите что-нибудь интересное..."
@@ -59,7 +60,8 @@
     </form>
 </div>
 
-<div class="post-list-title">Ваши публикации</div>
+<div class="post-list-title" th:if="${loginUserPage == #authentication.getName()}">Ваши публикации</div>
+<div class="post-list-title" th:unless="${loginUserPage == #authentication.getName()}">Публикации <span th:text="${loginUserPage}"/></div>
 <ul class="post-list">
     <li th:each="post : ${posts}" th:if="${posts != null && !posts.isEmpty}">
         <div class="post-item">
