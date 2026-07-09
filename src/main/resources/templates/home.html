@@ -3,6 +3,10 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
     <title>Home</title>
 
     <link rel="stylesheet" th:href="@{/css/home.css}"/>
@@ -10,81 +14,114 @@
 
 <body>
 
-<header class="navbar">
-    <div class="navbar-container">
-        <div class="navbar-brand">
-            <a th:href="@{/home}">InstBlog</a>
-        </div>
-
-        <!-- Имя/логин пользователя -->
-        <div class="navbar-user" sec:authorize="isAuthenticated()">
-            <div class="user-info">
-                <span class="user-name" th:text="${userName}">Имя</span>
-
-                <span class="user-login" th:text="${userLogin}">логин</span>
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <a th:href="@{/home}">InstBlog</a>
             </div>
 
-            <!-- Кнопка выхода -->
-            <form th:action="@{/logout}" method="post" class="navbar-actions" >
-                <button type="submit" class="btn-logout">Выйти</button>
-            </form>
-        </div>
+            <!-- Имя/логин пользователя -->
+            <div class="navbar-user" sec:authorize="isAuthenticated()">
+                <div class="user-info">
+                    <span class="user-name" th:text="${userName}">Имя</span>
 
+                    <span class="user-login" th:text="${userLogin}">логин</span>
+                </div>
+
+                <!-- Кнопка выхода -->
+                <form th:action="@{/logout}" method="post" class="navbar-actions" >
+                    <button type="submit" class="btn-logout">Выйти</button>
+                </form>
+            </div>
+
+        </div>
+    </header>
+
+    <div class="new-post-form" th:if="${loginUserPage == #authentication.getName()}">
+        <form th:action="@{/posts/create}" th:object="${post}" method="post" enctype="multipart/form-data">
+            <!-- CSRF токен -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <div class="form-group">
+                <label for="postContent">Содержание</label>
+                <textarea th:field="*{text}"
+                          id="postContent"
+                          name="content"
+                          rows="5"
+                          placeholder="Напишите что-нибудь интересное..."
+                          required></textarea>
+            </div>
+
+            <div class="form-group" hidden>
+                <label for="postImage">Изображение (необязательно)</label>
+                <input type="file"
+                       id="postImage"
+                       name="image"
+                       accept="image/*" />
+            </div>
+
+            <button type="submit" class="btn-submit">Опубликовать</button>
+        </form>
     </div>
-</header>
 
-<div class="new-post-form" th:if="${loginUserPage == #authentication.getName()}">
-    <form th:action="@{/posts/create}" th:object="${post}" method="post" enctype="multipart/form-data">
-        <!-- CSRF токен -->
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <div class="post-list-title" th:if="${loginUserPage == #authentication.getName()}">Ваши публикации</div>
+    <div class="post-list-title" th:unless="${loginUserPage == #authentication.getName()}">Публикации <span th:text="${loginUserPage}"/></div>
+    <ul class="post-list">
+        <li th:each="post : ${posts}" th:if="${posts != null && !posts.isEmpty}">
+            <div class="post-item" th:id="'post-' + ${post.id}">
+                <div class="post-header">
+                    <span class="post-author" th:text="${post.author.name}">Автор</span>
+                <span class="post-date">
+                    <span th:if="${post.getRedacted() == true}">(ред.)</span>
+                    <span th:text="${#temporals.format(post.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2024 12:00</span>
+                </span>
+                </div>
 
-        <div class="form-group">
-            <label for="postContent">Содержание</label>
-            <textarea th:field="*{text}"
-                      id="postContent"
-                      name="content"
-                      rows="5"
-                      placeholder="Напишите что-нибудь интересное..."
-                      required></textarea>
-        </div>
+                <div class="post-content">
+                    <!-- Текст поста (отображается по умолчанию) -->
+                    <p class="post-text"
+                       th:id="'text-' + ${post.id}"
+                       th:text="${post.text}">Текст публикации</p>
 
-        <div class="form-group" hidden>
-            <label for="postImage">Изображение (необязательно)</label>
-            <input type="file"
-                   id="postImage"
-                   name="image"
-                   accept="image/*" />
-        </div>
+                    <!-- Поле для редактирования (скрыто по умолчанию) -->
+                    <textarea class="post-edit-textarea"
+                              th:id="'edit-' + ${post.id}"
+                              style="display: none;"
+                              th:text="${post.text}"></textarea>
+                </div>
 
-        <button type="submit" class="btn-submit">Опубликовать</button>
-    </form>
-</div>
+                <div class="post-image" th:if="${post.imagePath != null}">
+                    <img th:src="@{${post.imagePath}}" alt="Изображение к посту" />
+                </div>
 
-<div class="post-list-title" th:if="${loginUserPage == #authentication.getName()}">Ваши публикации</div>
-<div class="post-list-title" th:unless="${loginUserPage == #authentication.getName()}">Публикации <span th:text="${loginUserPage}"/></div>
-<ul class="post-list">
-    <li th:each="post : ${posts}" th:if="${posts != null && !posts.isEmpty}">
-        <div class="post-item">
-            <div class="post-header">
-                <span class="post-author" th:text="${post.author.login}">Автор</span>
-                <span class="post-date" th:text="${#temporals.format(post.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2024 12:00</span>
+                <div class="post-footer">
+                    <div class="post-footer-left">
+                        <span class="post-likes">❤️ <span th:text="${post.likes}">0</span></span>
+                    </div>
+                    <div class="post-footer-right" th:if="${post.author.login == #authentication.getName()}">
+                        <!-- Кнопка редактирования (показывается по умолчанию) -->
+                        <button class="btn-edit"
+                                th:data-post-id="${post.id}"
+                                onclick="enableEdit(this)">Редактировать</button>
+
+                        <!-- Кнопка сохранения (скрыта по умолчанию) -->
+                        <button class="btn-save"
+                                th:data-post-id="${post.id}"
+                                style="display: none;"
+                                onclick="savePost(this)">Сохранить</button>
+
+                        <!-- Кнопка отмены (скрыта по умолчанию) -->
+                        <button class="btn-cancel"
+                                th:data-post-id="${post.id}"
+                                style="display: none;"
+                                onclick="cancelEdit(this)">Отмена</button>
+                    </div>
+                </div>
             </div>
+        </li>
+    </ul>
 
-            <div class="post-content">
-                <p class="post-text" th:text="${post.text}">Текст публикации</p>
-            </div>
-
-            <div class="post-image" th:if="${post.imagePath != null}">
-                <img th:src="@{${post.imagePath}}" alt="Изображение к посту" />
-            </div>
-
-            <div class="post-footer">
-                <span class="post-likes">❤️ <span th:text="${post.likes}">0</span></span>
-            </div>
-        </div>
-    </li>
-</ul>
-
+    <script th:src="@{/js/home.js}"></script>
 </body>
 
 </html>

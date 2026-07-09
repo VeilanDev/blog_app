@@ -26,6 +26,9 @@ public class Post {
     @JoinColumn(name = "author_id")
     private User author;
 
+    @Column(name = "redacted", nullable = false)
+    private Boolean redacted = false;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -72,6 +75,10 @@ public class Post {
         return likes;
     }
 
+    public Boolean getRedacted() {
+        return redacted;
+    }
+
     public void setAuthor(User author) {
         this.author = author;
     }
@@ -94,5 +101,9 @@ public class Post {
 
     public void setLikes(Integer likes) {
         this.likes = likes;
+    }
+
+    public void setRedacted(Boolean redacted) {
+        this.redacted = redacted;
     }
 }

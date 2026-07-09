@@ -293,26 +293,6 @@ body {
     object-fit: cover;
 }
 
-/* Подвал поста */
-.post-footer {
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-    margin-top: 0.8rem;
-    padding-top: 0.6rem;
-    border-top: 1px solid #f0f0f0;
-}
-
-.post-likes {
-    color: #6b6b80;
-    font-size: 0.85rem;
-}
-
-.post-likes span {
-    font-weight: 600;
-    color: #1a1a2e;
-}
-
 /* ==========================================
    НЕТ ПОСТОВ
    ========================================== */
@@ -331,4 +311,169 @@ body {
     margin-left: auto;
     margin-right: auto;
     box-sizing: border-box;
+}
+
+/* ==========================================
+   ПОДВАЛ ПОСТА С КНОПКОЙ РЕДАКТИРОВАНИЯ
+   ========================================== */
+
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.8rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.post-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.post-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.post-likes {
+    color: #6b6b80;
+    font-size: 0.85rem;
+}
+
+.post-likes span {
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+/* ==========================================
+   КНОПКА РЕДАКТИРОВАНИЯ
+   ========================================== */
+
+.btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.9rem;
+    background: transparent;
+    color: #4a6cf7;
+    border: 1.5px solid #4a6cf7;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.btn-edit:hover {
+    background: #4a6cf7;
+    color: #ffffff;
+}
+
+.btn-edit:active {
+    transform: scale(0.95);
+}
+
+
+/* ==========================================
+   ПОЛЕ РЕДАКТИРОВАНИЯ ТЕКСТА
+   ========================================== */
+
+.post-edit-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.7rem 1rem;
+    border: 2px solid #4a6cf7;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    line-height: 1.6;
+    resize: vertical;
+    box-sizing: border-box;
+    transition: border-color 0.25s ease;
+}
+
+.post-edit-textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.12);
+}
+
+/* ==========================================
+   КНОПКИ
+   ========================================== */
+
+.post-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.9rem;
+    background: transparent;
+    color: #4a6cf7;
+    border: 1.5px solid #4a6cf7;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.btn-edit:hover {
+    background: #4a6cf7;
+    color: #ffffff;
+}
+
+.btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.9rem;
+    background: #28a745;
+    color: #ffffff;
+    border: 1.5px solid #28a745;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.btn-save:hover {
+    background: #218838;
+    border-color: #218838;
+}
+
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.9rem;
+    background: transparent;
+    color: #dc3545;
+    border: 1.5px solid #dc3545;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background: #dc3545;
+    color: #ffffff;
+}
+
+.btn-edit:active,
+.btn-save:active,
+.btn-cancel:active {
+    transform: scale(0.95);
 }

@@ -55,22 +55,6 @@ public class HtmlController {
         return "home";
     }
 
-    @PostMapping("/posts/create")
-    public String createPost(
-            Model model,
-            Authentication authentication,
-            @ModelAttribute Post post
-    ) {
-        String login = authentication.getName();
-        userRepository.findByLogin(login).ifPresent(
-                user ->
-                    post.setAuthor(user)
-        );
-        postRepository.save(post);
-
-        return "redirect:/home/" + login;
-    }
-
     @GetMapping("/")
     public String defaultPage() {
         return "home";
