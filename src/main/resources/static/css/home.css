@@ -39,7 +39,6 @@ body {
     color: #1a1a2e;
     font-size: 1.5rem;
     font-weight: 700;
-    font-weight: bold;
     text-decoration: none;
     letter-spacing: -0.5px;
     transition: color 0.2s ease;
@@ -194,6 +193,7 @@ body {
 .new-post-form .btn-submit:active {
     transform: scale(0.97);
 }
+
 /* ==========================================
    СПИСОК ПОСТОВ
    ========================================== */
@@ -246,7 +246,10 @@ body {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Шапка поста */
+/* ==========================================
+   ШАПКА ПОСТА
+   ========================================== */
+
 .post-header {
     display: flex;
     justify-content: space-between;
@@ -262,12 +265,115 @@ body {
     font-size: 0.95rem;
 }
 
+.post-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
 .post-date {
     color: #6b6b80;
     font-size: 0.8rem;
 }
 
-/* Содержание поста */
+/* ==========================================
+   ВЫПАДАЮЩЕЕ МЕНЮ (ТРИ ТОЧКИ)
+   ========================================== */
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    background: transparent;
+    border: none;
+    color: #6b6b80;
+    cursor: pointer;
+    padding: 0.2rem 0.3rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.dropdown-toggle:hover {
+    background: #f0f0f0;
+    color: #1a1a2e;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #ffffff;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    min-width: 160px;
+    padding: 0.3rem 0;
+    display: none;
+    z-index: 100;
+    margin-top: 0.3rem;
+}
+
+.dropdown-menu.show {
+    display: block;
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.5rem 1.2rem;
+    background: transparent;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #1a1a2e;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    text-align: left;
+}
+
+.dropdown-item:hover {
+    background: #f5f5f5;
+}
+
+.dropdown-item.btn-edit-dropdown {
+    color: #4a6cf7;
+}
+
+.dropdown-item.btn-edit-dropdown:hover {
+    background: #eef3ff;
+}
+
+.dropdown-item.btn-delete-dropdown {
+    color: #dc3545;
+}
+
+.dropdown-item.btn-delete-dropdown:hover {
+    background: #fde8e8;
+}
+
+/* ==========================================
+   СОДЕРЖАНИЕ ПОСТА
+   ========================================== */
+
 .post-content {
     margin-bottom: 0.8rem;
 }
@@ -280,103 +386,6 @@ body {
     white-space: pre-wrap;
     word-wrap: break-word;
 }
-
-/* Изображение поста */
-.post-image {
-    margin-top: 0.6rem;
-}
-
-.post-image img {
-    max-width: 100%;
-    max-height: 350px;
-    border-radius: 8px;
-    object-fit: cover;
-}
-
-/* ==========================================
-   НЕТ ПОСТОВ
-   ========================================== */
-
-.no-posts {
-    background: #f8f9fa;
-    border: 1px dashed #d0d0d0;
-    border-radius: 12px;
-    padding: 2rem 1.5rem;
-    text-align: center;
-    color: #6b6b80;
-    font-size: 1rem;
-    max-width: 800px;
-    min-width: 320px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    box-sizing: border-box;
-}
-
-/* ==========================================
-   ПОДВАЛ ПОСТА С КНОПКОЙ РЕДАКТИРОВАНИЯ
-   ========================================== */
-
-.post-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 0.8rem;
-    padding-top: 0.6rem;
-    border-top: 1px solid #f0f0f0;
-}
-
-.post-footer-left {
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-}
-
-.post-footer-right {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-}
-
-.post-likes {
-    color: #6b6b80;
-    font-size: 0.85rem;
-}
-
-.post-likes span {
-    font-weight: 600;
-    color: #1a1a2e;
-}
-
-/* ==========================================
-   КНОПКА РЕДАКТИРОВАНИЯ
-   ========================================== */
-
-.btn-edit {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.3rem 0.9rem;
-    background: transparent;
-    color: #4a6cf7;
-    border: 1.5px solid #4a6cf7;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.25s ease;
-    cursor: pointer;
-}
-
-.btn-edit:hover {
-    background: #4a6cf7;
-    color: #ffffff;
-}
-
-.btn-edit:active {
-    transform: scale(0.95);
-}
-
 
 /* ==========================================
    ПОЛЕ РЕДАКТИРОВАНИЯ ТЕКСТА
@@ -402,8 +411,38 @@ body {
 }
 
 /* ==========================================
-   КНОПКИ
+   ИЗОБРАЖЕНИЕ ПОСТА
    ========================================== */
+
+.post-image {
+    margin-top: 0.6rem;
+}
+
+.post-image img {
+    max-width: 100%;
+    max-height: 350px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* ==========================================
+   ПОДВАЛ ПОСТА
+   ========================================== */
+
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.8rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.post-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
 
 .post-footer-right {
     display: flex;
@@ -411,26 +450,19 @@ body {
     gap: 0.6rem;
 }
 
-.btn-edit {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.3rem 0.9rem;
-    background: transparent;
-    color: #4a6cf7;
-    border: 1.5px solid #4a6cf7;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.25s ease;
-    cursor: pointer;
+.post-likes {
+    color: #6b6b80;
+    font-size: 0.85rem;
 }
 
-.btn-edit:hover {
-    background: #4a6cf7;
-    color: #ffffff;
+.post-likes span {
+    font-weight: 600;
+    color: #1a1a2e;
 }
+
+/* ==========================================
+   КНОПКИ СОХРАНЕНИЯ/ОТМЕНЫ
+   ========================================== */
 
 .btn-save {
     display: inline-flex;
@@ -472,8 +504,126 @@ body {
     color: #ffffff;
 }
 
-.btn-edit:active,
 .btn-save:active,
 .btn-cancel:active {
     transform: scale(0.95);
+}
+
+/* ==========================================
+   НЕТ ПОСТОВ
+   ========================================== */
+
+.no-posts {
+    background: #f8f9fa;
+    border: 1px dashed #d0d0d0;
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: #6b6b80;
+    font-size: 1rem;
+    max-width: 800px;
+    min-width: 320px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+/* ==========================================
+   ОКНО ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ
+   ========================================== */
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    max-width: 450px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-content h3 {
+    color: #dc3545;
+    font-size: 1.3rem;
+    margin-bottom: 0.8rem;
+}
+
+.modal-content p {
+    color: #1a1a2e;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.modal-post-text {
+    background: #f8f9fa;
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    border-left: 3px solid #dc3545;
+    font-style: italic;
+    color: #333;
+    margin: 0.8rem 0 1.2rem 0;
+    word-wrap: break-word;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: flex-end;
+}
+
+.btn-confirm-delete {
+    padding: 0.5rem 1.5rem;
+    background: #dc3545;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.25s ease;
+}
+
+.btn-confirm-delete:hover {
+    background: #c82333;
+}
+
+.btn-cancel-delete {
+    padding: 0.5rem 1.5rem;
+    background: #6c757d;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.25s ease;
+}
+
+.btn-cancel-delete:hover {
+    background: #5a6268;
 }

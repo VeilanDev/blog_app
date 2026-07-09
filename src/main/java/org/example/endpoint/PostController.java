@@ -73,4 +73,31 @@ public class PostController {
         System.out.println("Редактирование поста успешно завершено. id " + post.getId());
         return "redirect:/home/" + authentication.getName();
     }
+
+    @PostMapping("/posts/{id}/delete")
+    public String deletePost(
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
+            @PathVariable Long id
+    ) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Пост не найден")
+                );
+
+        if (!post.getAuthor().getLogin().equals(authentication.getName())) {
+            redirectAttributes.addFlashAttribute("error", "У вас нет прав на удаление");
+            System.out.println(
+                    "У вас " + authentication.getName() + " | автор : " + post.getAuthor().getLogin() +
+                            " нет прав удалить пост. id " + post.getId()
+            );
+            return "redirect:/home/" + authentication.getName();
+        }
+
+        postRepository.delete(post);
+        redirectAttributes.addFlashAttribute("success", "Пост успешно удален");
+        System.out.println("Пост с id " + id + " успешно удален");
+
+        return "redirect:/home/" + authentication.getName();
+    }
 }

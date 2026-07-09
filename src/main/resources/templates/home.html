@@ -71,10 +71,27 @@
             <div class="post-item" th:id="'post-' + ${post.id}">
                 <div class="post-header">
                     <span class="post-author" th:text="${post.author.name}">Автор</span>
-                <span class="post-date">
-                    <span th:if="${post.getRedacted() == true}">(ред.)</span>
-                    <span th:text="${#temporals.format(post.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2024 12:00</span>
-                </span>
+                    <div class="post-header-right">
+                    <span class="post-date">
+                        <span th:if="${post.redacted}">(ред.)</span>
+                        <span th:text="${#temporals.format(post.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2024 12:00</span>
+                    </span>
+
+                        <!-- Кнопка с тремя точками (только для автора) -->
+                        <div class="dropdown" th:if="${post.author.login == #authentication.getName()}">
+                            <button class="dropdown-toggle" onclick="toggleDropdown(this)" type="button">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="5" r="1.5"/>
+                                    <circle cx="12" cy="12" r="1.5"/>
+                                    <circle cx="12" cy="19" r="1.5"/>
+                                </svg>
+                            </button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item btn-edit-dropdown" onclick="enableEdit(this)" type="button">Редактировать</button>
+                                <button class="dropdown-item btn-delete-dropdown" onclick="confirmDelete(this)" type="button">Удалить</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="post-content">
@@ -99,11 +116,6 @@
                         <span class="post-likes">❤️ <span th:text="${post.likes}">0</span></span>
                     </div>
                     <div class="post-footer-right" th:if="${post.author.login == #authentication.getName()}">
-                        <!-- Кнопка редактирования (показывается по умолчанию) -->
-                        <button class="btn-edit"
-                                th:data-post-id="${post.id}"
-                                onclick="enableEdit(this)">Редактировать</button>
-
                         <!-- Кнопка сохранения (скрыта по умолчанию) -->
                         <button class="btn-save"
                                 th:data-post-id="${post.id}"
@@ -120,6 +132,19 @@
             </div>
         </li>
     </ul>
+
+    <!-- Окно подтверждения удаления поста -->
+    <div id="deleteModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Подтверждение удаления</h3>
+            <p>Вы уверены, что хотите удалить этот пост?</p>
+            <p class="modal-post-text" id="modalPostText"></p>
+            <div class="modal-actions">
+                <button class="btn-confirm-delete" onclick="deletePost()">Удалить</button>
+                <button class="btn-cancel-delete" onclick="closeModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
 
     <script th:src="@{/js/home.js}"></script>
 </body>
