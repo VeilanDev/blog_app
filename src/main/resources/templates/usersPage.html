@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+  <meta name="userId" th:content="${userId}" />
+  <meta name="currentUserLogin" th:content="${userLogin}" />
+
+  <title>Users</title>
+
+  <link rel="stylesheet" th:href="@{/css/usersPage.css}"/>
+</head>
+
+<body>
+
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <a th:href="@{/home}">InstBlog</a>
+      </div>
+
+      <!-- Имя/логин пользователя -->
+      <div class="navbar-user" sec:authorize="isAuthenticated()">
+        <div class="user-info">
+          <span class="user-name" th:text="${userName}">Имя</span>
+          <span class="user-login" th:text="${userLogin}">логин</span>
+        </div>
+
+        <!-- Кнопка выхода -->
+        <form th:action="@{/logout}" method="post" class="navbar-actions">
+          <button type="submit" class="btn-logout">Выйти</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-title">Все пользователи</div>
+
+  <ul class="users-list">
+    <!-- Пользователи добавляются через JavaScript -->
+  </ul>
+
+  <script th:src="@{/js/usersPage.js}"></script>
+</body>
+
+</html>

@@ -7,6 +7,54 @@ body {
 }
 
 /* ==========================================
+   ГЛОБАЛЬНЫЕ НАСТРОЙКИ ШРИФТОВ
+   ========================================== */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+}
+
+/* ==========================================
+   ШРИФТЫ ДЛЯ ПОСТОВ
+   ========================================== */
+
+.post-author {
+    font-weight: 600;
+    color: #1a1a2e;
+    font-size: 0.95rem;
+    font-family: Arial, sans-serif;
+}
+
+.post-text {
+    color: #1a1a2e;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: Arial, sans-serif;
+}
+
+.post-date {
+    color: #6b6b80;
+    font-size: 0.8rem;
+    font-family: Arial, sans-serif;
+}
+
+.post-likes {
+    color: #6b6b80;
+    font-size: 0.85rem;
+    font-family: Arial, sans-serif;
+}
+
+.post-likes span {
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+/* ==========================================
    ВЕРХНЯЯ ПАНЕЛЬ НАВИГАЦИИ
    ========================================== */
 
@@ -21,7 +69,6 @@ body {
     z-index: 1000;
 }
 
-/* Внутренний контейнер */
 .navbar-container {
     width: 100%;
     padding: 0;
@@ -49,6 +96,27 @@ body {
     color: #4a6cf7;
 }
 
+/* Кнопка пользователи */
+
+.btn-users {
+    padding: 0.45rem 1.2rem;
+    background: transparent;
+    color: #1a1a2e;
+    border: 1.5px solid #1a1a2e;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    margin-left: 1.5rem;
+}
+
+.btn-users:hover {
+    background: #1a1a2e;
+    color: #ffffff;
+}
+
 /* ==========================================
    БЛОК ПОЛЬЗОВАТЕЛЯ
    ========================================== */
@@ -58,33 +126,51 @@ body {
     align-items: center;
     gap: 1.5rem;
     padding-right: 2rem;
+    margin-left: auto;
 }
 
-/* Информация о пользователе */
 .user-info {
+    flex: 1;
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
     color: #1a1a2e;
     font-size: 0.9rem;
 }
 
-/* Имя пользователя */
 .user-name {
     font-weight: 600;
     color: #1a1a2e;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    line-height: 1.2;
 }
 
-/* Логин пользователя */
 .user-login {
     color: #6b6b80;
     font-size: 0.85rem;
+    line-height: 1.2;
 }
 
-/* ==========================================
-   КНОПКА ВЫХОДА
-   ========================================== */
+
+/* Кнопка пользователи */
+.btn-users {
+    padding: 0.45rem 1.2rem;
+    background: transparent;
+    color: #1a1a2e;
+    border: 1.5px solid #1a1a2e;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.btn-users:hover {
+    background: #1a1a2e;
+    color: #ffffff;
+}
 
 .navbar-actions {
     display: flex;
@@ -122,9 +208,9 @@ body {
     border: 1px solid #eaeaea;
     border-radius: 12px;
     padding: 1.5rem 2rem;
-    margin-bottom: 2rem;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 2rem;
     max-width: 800px;
     min-width: 320px;
     width: 100%;
@@ -202,6 +288,7 @@ body {
     font-size: 1.3rem;
     font-weight: 700;
     color: #1a1a2e;
+    margin-top: 2rem;
     margin-bottom: 1.2rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid #4a6cf7;
