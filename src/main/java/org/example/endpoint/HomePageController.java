@@ -9,18 +9,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-public class HtmlController {
-    private static final Logger log = LoggerFactory.getLogger(HtmlController.class);
+public class HomePageController {
+    private static final Logger log = LoggerFactory.getLogger(HomePageController.class);
 
     private final UserRepository userRepository;
     private final LikePostService likePostService;
 
-    public HtmlController(UserRepository userRepository, LikePostService likePostService) {
+    public HomePageController(UserRepository userRepository, LikePostService likePostService) {
         this.userRepository = userRepository;
         this.likePostService = likePostService;
     }
