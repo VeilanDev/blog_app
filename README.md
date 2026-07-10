@@ -81,6 +81,13 @@
 |     | created_at           |          |
 |     | updated_at           |          |
 
+### likes_posts
+
+| PK  | id      |     |
+| :-: | ------- | --- |
+| FK  | post_id |     |
+| FK  | user_id |     |
+
 ### comments
 
 | PK  | id  |
