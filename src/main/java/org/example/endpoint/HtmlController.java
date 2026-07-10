@@ -38,6 +38,12 @@ public class HtmlController {
             @PathVariable String loginUserPage
     ) {
         String userLogin = authentication.getName();
+        userRepository.findByLogin(loginUserPage).ifPresent(
+                userPage -> {
+                    model.addAttribute("userId", userPage.getId());
+                    model.addAttribute("nameUserPage", userPage.getName());
+                }
+        );
         userRepository.findByLogin(userLogin).ifPresent(
                 user -> {
                     model.addAttribute("userLogin", userLogin);
@@ -45,13 +51,8 @@ public class HtmlController {
                     model.addAttribute("currentUser", user);
                 }
         );
-        userRepository.findByLogin(loginUserPage).ifPresent(
-                userInPage -> {
-                    model.addAttribute("posts", userInPage.getUserPosts());
-                }
-        );
 
-        model.addAttribute("likePostService", likePostService);
+        model.addAttribute("loginUserPage", loginUserPage);
         model.addAttribute("post", new Post());
 
         return "home";

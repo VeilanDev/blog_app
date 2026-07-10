@@ -6,6 +6,7 @@
 
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <meta name="userId" th:content="${userId}" />
 
     <title>Home</title>
 
@@ -65,79 +66,9 @@
     </div>
 
     <div class="post-list-title" th:if="${loginUserPage == #authentication.getName()}">Ваши публикации</div>
-    <div class="post-list-title" th:unless="${loginUserPage == #authentication.getName()}">Публикации <span th:text="${loginUserPage}"/></div>
+    <div class="post-list-title" th:unless="${loginUserPage == #authentication.getName()}">Публикации <span th:text="${nameUserPage}"/></div>
     <ul class="post-list">
-        <li th:each="post : ${posts}" th:if="${posts != null && !posts.isEmpty}">
-            <div class="post-item" th:id="'post-' + ${post.id}">
-                <div class="post-header">
-                    <span class="post-author" th:text="${post.author.name}">Автор</span>
-                    <div class="post-header-right">
-                    <span class="post-date">
-                        <span th:if="${post.redacted}">(ред.)</span>
-                        <span th:text="${#temporals.format(post.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2024 12:00</span>
-                    </span>
-
-                        <!-- Кнопка с тремя точками (только для автора) -->
-                        <div class="dropdown" th:if="${post.author.login == #authentication.getName()}">
-                            <button class="dropdown-toggle" onclick="toggleDropdown(this)" type="button">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="5" r="1.5"/>
-                                    <circle cx="12" cy="12" r="1.5"/>
-                                    <circle cx="12" cy="19" r="1.5"/>
-                                </svg>
-                            </button>
-                            <div class="dropdown-menu">
-                                <button class="dropdown-item btn-edit-dropdown" onclick="enableEdit(this)" type="button">Редактировать</button>
-                                <button class="dropdown-item btn-delete-dropdown" onclick="confirmDelete(this)" type="button">Удалить</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="post-content">
-                    <!-- Текст поста (отображается по умолчанию) -->
-                    <p class="post-text"
-                       th:id="'text-' + ${post.id}"
-                       th:text="${post.text}">Текст публикации</p>
-
-                    <!-- Поле для редактирования (скрыто по умолчанию) -->
-                    <textarea class="post-edit-textarea"
-                              th:id="'edit-' + ${post.id}"
-                              style="display: none;"
-                              th:text="${post.text}"></textarea>
-                </div>
-
-                <div class="post-image" th:if="${post.imagePath != null}">
-                    <img th:src="@{${post.imagePath}}" alt="Изображение к посту" />
-                </div>
-
-                <div class="post-footer">
-                    <div class="post-footer-left">
-                        <!-- Кнопка лайка -->
-                        <button class="btn-like"
-                                th:data-post-id="${post.id}"
-                                onclick="toggleLike(this)">
-                            <span th:if="${likePostService.hasUserLiked(post.id, currentUser)}" class="heart liked">❤️</span>
-                            <span th:unless="${likePostService.hasUserLiked(post.id, currentUser)}" class="heart">🤍</span>
-                            <span class="likes-count" th:text="${post.getLikes()}">0</span>
-                        </button>
-                    </div>
-                    <div class="post-footer-right" th:if="${post.author.login == #authentication.getName()}">
-                        <!-- Кнопка сохранения (скрыта по умолчанию) -->
-                        <button class="btn-save"
-                                th:data-post-id="${post.id}"
-                                style="display: none;"
-                                onclick="savePost(this)">Сохранить</button>
-
-                        <!-- Кнопка отмены (скрыта по умолчанию) -->
-                        <button class="btn-cancel"
-                                th:data-post-id="${post.id}"
-                                style="display: none;"
-                                onclick="cancelEdit(this)">Отмена</button>
-                    </div>
-                </div>
-            </div>
-        </li>
+        <!-- в этом месте js скрипт загрузит посты вместо thymeleaf -->
     </ul>
 
     <!-- Окно подтверждения удаления поста -->
