@@ -113,7 +113,14 @@
 
                 <div class="post-footer">
                     <div class="post-footer-left">
-                        <span class="post-likes">❤️ <span th:text="${post.likes}">0</span></span>
+                        <!-- Кнопка лайка -->
+                        <button class="btn-like"
+                                th:data-post-id="${post.id}"
+                                onclick="toggleLike(this)">
+                            <span th:if="${likePostService.hasUserLiked(post.id, currentUser)}" class="heart liked">❤️</span>
+                            <span th:unless="${likePostService.hasUserLiked(post.id, currentUser)}" class="heart">🤍</span>
+                            <span class="likes-count" th:text="${post.getLikes()}">0</span>
+                        </button>
                     </div>
                     <div class="post-footer-right" th:if="${post.author.login == #authentication.getName()}">
                         <!-- Кнопка сохранения (скрыта по умолчанию) -->

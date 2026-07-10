@@ -5,6 +5,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -37,8 +39,8 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "likes", nullable = false)
-    private Integer likes = 0;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LikesPost> likesList = new ArrayList<>();
 
     public Post() {}
     public Post(String text, String imagePath) {
@@ -71,8 +73,12 @@ public class Post {
         return imagePath;
     }
 
+    public List<LikesPost> getLikesList() {
+        return likesList;
+    }
+
     public Integer getLikes() {
-        return likes;
+        return likesList.size();
     }
 
     public Boolean getRedacted() {
@@ -99,8 +105,8 @@ public class Post {
         this.updatedAt = updatedAt;
     }
 
-    public void setLikes(Integer likes) {
-        this.likes = likes;
+    public void setLikesList(List<LikesPost> likesList) {
+        this.likesList = likesList;
     }
 
     public void setRedacted(Boolean redacted) {

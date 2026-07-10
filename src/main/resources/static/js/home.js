@@ -317,3 +317,41 @@ document.addEventListener('keydown', function(event) {
         closeModal();
     }
 });
+
+/**
+ * Поставить/убрать лайк
+ */
+function toggleLike(button) {
+    const postId = button.dataset.postId;
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    fetch('/posts/' + postId + '/like', {
+        method: 'POST',
+        headers: {
+            [csrfHeader]: csrfToken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Обновляем иконку
+            const heartSpan = button.querySelector('span:first-child');
+            if (data.action === 'liked') {
+                heartSpan.textContent = '❤️';
+            } else {
+                heartSpan.textContent = '🤍';
+            }
+
+            // Обновляем счетчик
+            const countSpan = button.querySelector('.likes-count');
+            countSpan.textContent = data.likesCount;
+        } else {
+            alert(data.message || 'Ошибка при обновлении лайка');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при обновлении лайка');
+    });
+}

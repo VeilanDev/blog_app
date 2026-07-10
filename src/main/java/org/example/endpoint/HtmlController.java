@@ -1,8 +1,8 @@
 package org.example.endpoint;
 
 import org.example.entity.Post;
-import org.example.repository.PostRepository;
 import org.example.repository.UserRepository;
+import org.example.service.LikePostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -18,11 +18,11 @@ public class HtmlController {
     private static final Logger log = LoggerFactory.getLogger(HtmlController.class);
 
     private final UserRepository userRepository;
-    private final PostRepository postRepository;
+    private final LikePostService likePostService;
 
-    public HtmlController(UserRepository userRepository, PostRepository postRepository) {
+    public HtmlController(UserRepository userRepository, LikePostService likePostService) {
         this.userRepository = userRepository;
-        this.postRepository = postRepository;
+        this.likePostService = likePostService;
     }
 
     @GetMapping("/home")
@@ -42,6 +42,7 @@ public class HtmlController {
                 user -> {
                     model.addAttribute("userLogin", userLogin);
                     model.addAttribute("userName", user.getName());
+                    model.addAttribute("currentUser", user);
                 }
         );
         userRepository.findByLogin(loginUserPage).ifPresent(
@@ -50,6 +51,7 @@ public class HtmlController {
                 }
         );
 
+        model.addAttribute("likePostService", likePostService);
         model.addAttribute("post", new Post());
 
         return "home";
