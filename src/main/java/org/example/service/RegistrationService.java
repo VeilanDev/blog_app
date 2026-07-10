@@ -25,15 +25,8 @@ public class RegistrationService {
             throw new IllegalArgumentException("Пользователь с логином " + login + " существует");
         }
 
-        User userEntity = new User();
-        userEntity.setLogin(login);
-        userEntity.setEmail(email);
-        userEntity.setName(login);
-
         String passwordHash = passwordEncoder.encode(passwordRaw);
-        userEntity.setPasswordHash(passwordHash);
-
-        userEntity.setRole(Role.USER.name());
+        User userEntity = new User(login, email, passwordHash);
 
         return userRepository.save(userEntity);
     }
