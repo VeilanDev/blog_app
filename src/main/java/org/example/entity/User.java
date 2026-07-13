@@ -38,6 +38,9 @@ public class User {
     @OrderBy("createdAt DESC")
     private List<Post> posts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> commentsList = new ArrayList<>();
+
     @Column(name = "user_hash")
     private String userHash;
 
@@ -83,8 +86,20 @@ public class User {
         return role;
     }
 
-    public List<Post> getUserPosts() {
+    public List<Post> getPosts() {
         return posts;
+    }
+
+    public List<Comment> getCommentsList() {
+        return commentsList;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public String getUserHash() {
@@ -115,7 +130,19 @@ public class User {
         this.userHash = userHash;
     }
 
-    public void setUserPosts(List<Post> posts) {
+    public void setPosts(List<Post> posts) {
         this.posts = posts;
+    }
+
+    public void setCommentsList(List<Comment> commentsList) {
+        this.commentsList = commentsList;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -145,6 +145,22 @@
                     <button class="btn-cancel" onclick="cancelEditFromModal()">Отмена</button>
                 </div>
             </div>
+
+            <div class="post-comments-section">
+                <div class="comments-title">Комментарии</div>
+
+                <!-- Форма добавления комментария -->
+                <div class="comment-form">
+                    <textarea class="comment-input" id="commentInput" placeholder="Напишите комментарий..." rows="2"></textarea>
+                    <button class="btn-submit-comment" onclick="submitComment()">Отправить</button>
+                </div>
+
+                <!-- Список комментариев -->
+                <div class="comments-list" id="commentsList">
+                    <!-- Комментарии загружаются через JavaScript -->
+                </div>
+            </div>
+        </div>
         </div>
     </div>
 

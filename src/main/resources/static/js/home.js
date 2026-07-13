@@ -289,7 +289,7 @@ function deletePost() {
                 // Показываем сообщение "Нет постов"
                 const noPosts = document.createElement('div');
                 noPosts.className = 'no-posts';
-                noPosts.textContent = 'У вас пока нет публикаций. Создайте свой первый пост!';
+                noPosts.textContent = 'У вас пока нет публикаций';
                 postList.parentNode.insertBefore(noPosts, postList);
                 postList.remove();
             }
@@ -642,6 +642,296 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 let currentModalPostId = null;
 
+// ==========================================
+// ФУНКЦИИ ДЛЯ КОММЕНТАРИЕВ
+// ==========================================
+
+/**
+ * Загрузка комментариев для поста
+ */
+function loadComments(postId) {
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+    const currentUserLogin = document.querySelector('meta[name="currentUserLogin"]')?.content || '';
+
+    fetch(`/api/comments/post/${postId}?page=0&size=50`, {
+        method: 'GET',
+        headers: {
+            [csrfHeader]: csrfToken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const commentsList = document.getElementById('commentsList');
+        commentsList.innerHTML = '';
+
+        if (data.comments && data.comments.length > 0) {
+            data.comments.forEach(comment => {
+                // Устанавливаем isAuthor для каждого комментария
+                comment.isAuthor = comment.authorLogin === currentUserLogin;
+                const commentHtml = createCommentElement(comment);
+                commentsList.insertAdjacentHTML('beforeend', commentHtml);
+            });
+        } else {
+            commentsList.innerHTML = '<div class="no-comments">Пока нет комментариев</div>';
+        }
+    })
+    .catch(error => {
+        console.error('Error loading comments:', error);
+    });
+}
+
+/**
+ * Создание HTML для одного комментария
+ */
+function createCommentElement(comment) {
+
+    let formattedDate = '';
+
+    if (comment.createdAt && Array.isArray(comment.createdAt)) {
+        const [year, month, day, hour, minute, second] = comment.createdAt;
+        const date = new Date(year, month - 1, day, hour, minute, second);
+
+        if (!isNaN(date.getTime())) {
+            formattedDate = date.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    } else if (typeof comment.createdAt === 'string') {
+        const date = new Date(comment.createdAt);
+        if (!isNaN(date.getTime())) {
+            formattedDate = date.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } else {
+            formattedDate = comment.createdAt;
+        }
+    }
+
+    const redactedHtml = comment.redacted ? '<span class="comment-redacted">(ред.)</span> ' : '';
+    const showDropdown = comment.isAuthor;
+
+    // Экранируем текст комментария
+    const escapedText = escapeHtml(comment.text);
+
+    return `
+        <div class="comment-item" id="comment-${comment.id}">
+            <div class="comment-header">
+                <div class="comment-header-left">
+                    <span class="comment-author">${comment.authorName || comment.authorLogin}</span>
+                    <span class="comment-login">${comment.authorLogin}</span>
+                </div>
+                <div class="comment-header-right">
+                    <span class="comment-date">
+                        ${redactedHtml}
+                        ${formattedDate}
+                    </span>
+                    ${showDropdown ? `
+                    <div class="comment-dropdown">
+                        <button class="comment-dropdown-toggle" onclick="event.stopPropagation(); toggleCommentDropdown(this)" type="button">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="5" r="1.5"/>
+                                <circle cx="12" cy="12" r="1.5"/>
+                                <circle cx="12" cy="19" r="1.5"/>
+                            </svg>
+                        </button>
+                        <div class="comment-dropdown-menu">
+                            <button class="comment-dropdown-item btn-edit-comment" onclick="event.stopPropagation(); editComment(${comment.id})">Редактировать</button>
+                            <button class="comment-dropdown-item btn-delete-comment" onclick="event.stopPropagation(); deleteComment(${comment.id})">Удалить</button>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+            <p class="comment-text" id="comment-text-${comment.id}">${escapedText}</p>
+            <textarea class="comment-edit-textarea" id="comment-edit-${comment.id}" style="display: none;">${escapedText}</textarea>
+            <div class="comment-edit-actions" id="comment-edit-actions-${comment.id}" style="display: none;">
+                <button class="btn-save-comment" onclick="saveComment(${comment.id})">Сохранить</button>
+                <button class="btn-cancel-comment" onclick="cancelEditComment(${comment.id})">Отмена</button>
+            </div>
+        </div>
+    `;
+}
+
+
+/**
+ * Переключение выпадающего меню комментария
+ */
+function toggleCommentDropdown(button) {
+    const dropdown = button.closest('.comment-dropdown');
+    if (!dropdown) return;
+
+    const menu = dropdown.querySelector('.comment-dropdown-menu');
+    if (!menu) return;
+
+    document.querySelectorAll('.comment-dropdown-menu.show').forEach(m => {
+        if (m !== menu) {
+            m.classList.remove('show');
+        }
+    });
+
+    menu.classList.toggle('show');
+}
+
+/**
+ * Отправка комментария
+ */
+function submitComment() {
+    const modal = document.getElementById('postModal');
+    const postId = modal.dataset.postId;
+    const input = document.getElementById('commentInput');
+    const text = input.value.trim();
+
+    if (!text) {
+        alert('Напишите текст комментария');
+        return;
+    }
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    fetch('/comments/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            [csrfHeader]: csrfToken
+        },
+        body: `postId=${postId}&text=${encodeURIComponent(text)}`
+    })
+    .then(response => {
+        if (response.ok) {
+            input.value = '';
+            loadComments(postId);
+        } else {
+            alert('Ошибка при добавлении комментария');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при добавлении комментария');
+    });
+}
+
+/**
+ * Редактирование комментария
+ */
+function editComment(commentId) {
+    const textElement = document.getElementById('comment-text-' + commentId);
+    const editElement = document.getElementById('comment-edit-' + commentId);
+    const actionsElement = document.getElementById('comment-edit-actions-' + commentId);
+
+    textElement.style.display = 'none';
+    editElement.style.display = 'block';
+    editElement.value = textElement.textContent.trim();
+    actionsElement.style.display = 'flex';
+
+    // Закрываем dropdown
+    const dropdown = document.querySelector(`#comment-${commentId} .comment-dropdown-menu`);
+    if (dropdown) {
+        dropdown.classList.remove('show');
+    }
+}
+
+/**
+ * Отмена редактирования комментария
+ */
+function cancelEditComment(commentId) {
+    const textElement = document.getElementById('comment-text-' + commentId);
+    const editElement = document.getElementById('comment-edit-' + commentId);
+    const actionsElement = document.getElementById('comment-edit-actions-' + commentId);
+
+    textElement.style.display = 'block';
+    editElement.style.display = 'none';
+    actionsElement.style.display = 'none';
+}
+
+/**
+ * Сохранение комментария
+ */
+function saveComment(commentId) {
+    const editElement = document.getElementById('comment-edit-' + commentId);
+    const newText = editElement.value.trim();
+
+    if (!newText) {
+        alert('Текст комментария не может быть пустым');
+        return;
+    }
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    fetch('/comments/' + commentId + '/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            [csrfHeader]: csrfToken
+        },
+        body: 'text=' + encodeURIComponent(newText)
+    })
+    .then(response => {
+        if (response.ok) {
+            const modal = document.getElementById('postModal');
+            const postId = modal.dataset.postId;
+            loadComments(postId);
+        } else {
+            alert('Ошибка при сохранении комментария');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при сохранении комментария');
+    });
+}
+
+/**
+ * Удаление комментария
+ */
+function deleteComment(commentId) {
+    if (!confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+        return;
+    }
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    fetch('/comments/' + commentId + '/delete', {
+        method: 'POST',
+        headers: {
+            [csrfHeader]: csrfToken
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            const modal = document.getElementById('postModal');
+            const postId = modal.dataset.postId;
+            loadComments(postId);
+        } else {
+            alert('Ошибка при удалении комментария');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при удалении комментария');
+    });
+}
+
+// Закрытие комментарий dropdown при клике вне
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.comment-dropdown')) {
+        document.querySelectorAll('.comment-dropdown-menu.show').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});
+
 /**
  * Открытие модального окна с постом
  */
@@ -729,6 +1019,8 @@ function openPostModal(postId) {
 
         // Скрываем кнопки сохранения/отмены
         document.getElementById('modalFooterActions').style.display = 'none';
+
+        loadComments(postId);
 
         // Показываем модальное окно
         document.getElementById('postModal').style.display = 'flex';

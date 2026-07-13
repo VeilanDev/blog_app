@@ -1,6 +1,7 @@
 package org.example.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class PostDetailDto {
     private Long id;
@@ -14,9 +15,9 @@ public class PostDetailDto {
     private Integer likes;
     private Boolean likedByCurrentUser;
     private Boolean isAuthor;
+    private List<CommentResponseDto> comments;
 
     public PostDetailDto() {}
-
     public PostDetailDto(
             Long id,
             String text,
@@ -39,6 +40,7 @@ public class PostDetailDto {
         this.likes = likes;
         this.likedByCurrentUser = false;
         this.isAuthor = false;
+        this.comments = List.of();
     }
 
     public Long getId() { return id; }
@@ -76,4 +78,10 @@ public class PostDetailDto {
     public Boolean getIsAuthor() { return isAuthor; }
     public void setIsAuthor(Boolean isAuthor) { this.isAuthor = isAuthor; }
 
+    public List<CommentResponseDto> getComments() {
+        return comments;
+    }
+    public void setComments(List<CommentResponseDto> comments) {
+        this.comments = comments;
+    }
 }
