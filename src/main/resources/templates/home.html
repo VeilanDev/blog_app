@@ -7,6 +7,7 @@
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <meta name="userId" th:content="${userId}" />
+    <meta name="currentUserLogin" th:content="${userLogin}" />
 
     <title>Home</title>
 
@@ -15,75 +16,138 @@
 
 <body>
 
-<header class="navbar">
-    <div class="navbar-container">
-        <div class="navbar-brand">
-            <a th:href="@{/home}">InstBlog</a>
-        </div>
-
-        <!-- Кнопка пользователи -->
-        <a th:href="@{/users}" class="btn-users">Пользователи</a>
-
-        <!-- Имя/логин пользователя -->
-        <div class="navbar-user" sec:authorize="isAuthenticated()">
-            <div class="user-info">
-                <span class="user-name" th:text="${userName}">Имя</span>
-                <span class="user-login" th:text="${userLogin}">логин</span>
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <a th:href="@{/home}">InstBlog</a>
             </div>
 
-            <!-- Кнопка выхода -->
-            <form th:action="@{/logout}" method="post" class="navbar-actions">
-                <button type="submit" class="btn-logout">Выйти</button>
-            </form>
+            <!-- Кнопка пользователи -->
+            <a th:href="@{/users}" class="btn-users">Пользователи</a>
+
+            <!-- Имя/логин пользователя -->
+            <div class="navbar-user" sec:authorize="isAuthenticated()">
+                <div class="user-info">
+                    <span class="user-name" th:text="${userName}">Имя</span>
+                    <span class="user-login" th:text="${userLogin}">логин</span>
+                </div>
+
+                <!-- Кнопка выхода -->
+                <form th:action="@{/logout}" method="post" class="navbar-actions">
+                    <button type="submit" class="btn-logout">Выйти</button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <div class="new-post-form" th:if="${loginUserPage == #authentication.getName()}">
+        <form th:action="@{/posts/create}" th:object="${post}" method="post" enctype="multipart/form-data">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <div class="form-group">
+                <label for="postContent">Содержание</label>
+                <textarea th:field="*{text}"
+                          id="postContent"
+                          name="content"
+                          rows="5"
+                          placeholder="Напишите что-нибудь интересное..."
+                          required></textarea>
+            </div>
+
+            <div class="form-group" hidden>
+                <label for="postImage">Изображение (необязательно)</label>
+                <input type="file"
+                       id="postImage"
+                       name="image"
+                       accept="image/*" />
+            </div>
+
+            <button type="submit" class="btn-submit">Опубликовать</button>
+        </form>
+    </div>
+
+    <div class="post-list-title" th:if="${loginUserPage == #authentication.getName()}">Ваши публикации</div>
+    <div class="post-list-title" th:unless="${loginUserPage == #authentication.getName()}">Публикации <span th:text="${nameUserPage}"/></div>
+    <ul class="post-list">
+        <!-- Посты загружаются через JavaScript -->
+    </ul>
+
+    <!-- Окно подтверждения удаления поста -->
+    <div id="deleteModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Подтверждение удаления</h3>
+            <p>Вы уверены, что хотите удалить этот пост?</p>
+            <p class="modal-post-text" id="modalPostText"></p>
+            <div class="modal-actions">
+                <button class="btn-confirm-delete" onclick="deletePost()">Удалить</button>
+                <button class="btn-cancel-delete" onclick="closeModal()">Отмена</button>
+            </div>
         </div>
     </div>
-</header>
 
-<div class="new-post-form" th:if="${loginUserPage == #authentication.getName()}">
-    <form th:action="@{/posts/create}" th:object="${post}" method="post" enctype="multipart/form-data">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <!-- Модальное окно просмотра поста -->
+    <div id="postModal" class="modal" style="display: none;">
+        <div class="modal-content post-modal-content">
+            <!-- Заголовок: имя, логин, дата + (ред.), действия, крестик -->
+            <div class="post-modal-header">
+                <span class="post-modal-author" id="modalPostAuthor">Автор</span>
+                <span class="post-modal-login" id="modalPostLogin">@логин</span>
 
-        <div class="form-group">
-            <label for="postContent">Содержание</label>
-            <textarea th:field="*{text}"
-                      id="postContent"
-                      name="content"
-                      rows="5"
-                      placeholder="Напишите что-нибудь интересное..."
-                      required></textarea>
-        </div>
+                <!-- Блок даты и (ред.) прижат к правому краю -->
+                <div class="post-modal-date-group">
+                    <span class="post-modal-redacted" id="modalPostRedacted" style="display: none;">(ред.) </span>
+                    <span class="post-modal-date" id="modalPostDate">12.07.2026 15:30</span>
+                </div>
 
-        <div class="form-group" hidden>
-            <label for="postImage">Изображение (необязательно)</label>
-            <input type="file"
-                   id="postImage"
-                   name="image"
-                   accept="image/*" />
-        </div>
+                <!-- Dropdown для модального окна -->
+                <div class="dropdown" id="modalPostDropdown" style="display: none;">
+                    <button class="dropdown-toggle" onclick="event.stopPropagation(); toggleDropdown(this)" type="button">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="5" r="1.5"/>
+                            <circle cx="12" cy="12" r="1.5"/>
+                            <circle cx="12" cy="19" r="1.5"/>
+                        </svg>
+                    </button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item btn-edit-dropdown" onclick="event.stopPropagation(); editFromModal()">Редактировать</button>
+                        <button class="dropdown-item btn-delete-dropdown" onclick="event.stopPropagation(); deleteFromModal()">Удалить</button>
+                    </div>
+                </div>
 
-        <button type="submit" class="btn-submit">Опубликовать</button>
-    </form>
-</div>
+                <!-- Крестик закрытия -->
+                <button class="modal-close" onclick="closePostModal()">&times;</button>
+            </div>
 
-<div class="post-list-title" th:if="${loginUserPage == #authentication.getName()}">Ваши публикации</div>
-<div class="post-list-title" th:unless="${loginUserPage == #authentication.getName()}">Публикации <span th:text="${nameUserPage}"/></div>
-<ul class="post-list">
-    <!-- Посты загружаются через JavaScript -->
-</ul>
+            <!-- Тело модального окна -->
+            <div class="post-modal-body">
+                <!-- Поле для редактирования (скрыто по умолчанию) -->
+                <textarea class="post-modal-edit-textarea" id="modalEditText" style="display: none;">Текст поста</textarea>
+                <!-- Текст поста (отображается по умолчанию) -->
+                <p class="post-modal-text" id="modalPostDetailText">Текст поста</p>
 
-<!-- Окно подтверждения удаления поста -->
-<div id="deleteModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <h3>Подтверждение удаления</h3>
-        <p>Вы уверены, что хотите удалить этот пост?</p>
-        <p class="modal-post-text" id="modalPostText"></p>
-        <div class="modal-actions">
-            <button class="btn-confirm-delete" onclick="deletePost()">Удалить</button>
-            <button class="btn-cancel-delete" onclick="closeModal()">Отмена</button>
+                <div class="post-modal-image" id="modalPostImage" style="display: none;">
+                    <img id="modalPostImageSrc" src="" alt="Изображение к посту" />
+                </div>
+            </div>
+
+            <!-- Подвал модального окна -->
+            <div class="post-modal-footer">
+                <div class="post-modal-footer-left">
+                    <button class="btn-like modal-like"
+                            id="modalLikeButton"
+                            onclick="toggleLikeFromModal(event)">
+                        <span class="heart" id="modalHeart">🤍</span>
+                        <span class="likes-count" id="modalLikesCount">0</span>
+                    </button>
+                </div>
+                <div class="post-modal-footer-right" id="modalFooterActions" style="display: none;">
+                    <button class="btn-save" onclick="savePostFromModal()">Сохранить</button>
+                    <button class="btn-cancel" onclick="cancelEditFromModal()">Отмена</button>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<script th:src="@{/js/home.js}"></script>
+    <script th:src="@{/js/home.js}"></script>
 </body>
 </html>

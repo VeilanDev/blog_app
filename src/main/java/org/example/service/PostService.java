@@ -1,5 +1,6 @@
 package org.example.service;
 
+import org.example.dto.PostDetailDto;
 import org.example.dto.PostResponseDto;
 import org.example.repository.PostRepository;
 import org.springframework.data.domain.Page;
@@ -43,6 +44,19 @@ public class PostService {
                 });
 
         return posts;
+    }
+
+    public PostDetailDto getPostDetail(Long postId, String currentUserLogin) {
+        PostDetailDto post = postRepository.findPostDetailById(postId)
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Пост не найден")
+                );
+
+        boolean liked = postRepository.hasUserLiked(postId, currentUserLogin);
+        post.setLikedByCurrentUser(liked);
+        post.setIsAuthor(post.getAuthorLogin().equals(currentUserLogin));
+
+        return post;
     }
 
 

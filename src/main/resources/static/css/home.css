@@ -825,3 +825,229 @@ body {
     border-top: 1px solid #eaeaea;
     margin-top: 1rem;
 }
+
+/* ==========================================
+   МОДАЛЬНОЕ ОКНО ПРОСМОТРА ПОСТА
+   ========================================== */
+
+.post-modal-content {
+    max-width: 800px;  /* ← Теперь как обычный пост */
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1.5rem 2rem;
+    position: relative;
+    border-radius: 12px;
+}
+
+/* Заголовок модального окна */
+.post-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f0f0f0;
+    flex-wrap: nowrap;
+}
+
+.post-modal-author {
+    font-weight: 600;
+    color: #1a1a2e;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.post-modal-login {
+    color: #6b6b80;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Блок даты и (ред.) */
+.post-modal-date-group {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+    margin-left: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.post-modal-date {
+    color: #6b6b80;
+    font-size: 0.8rem;
+}
+
+.post-modal-redacted {
+    color: #6b6b80;
+    font-size: 0.8rem;
+    font-weight: normal;
+    font-style: normal;
+    text-decoration: none;
+}
+
+/* Крестик закрытия */
+.modal-close {
+    font-size: 1.6rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #6b6b80;
+    transition: color 0.2s ease;
+    padding: 0 0.2rem 0 0.6rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.modal-close:hover {
+    color: #1a1a2e;
+}
+
+/* Тело модального окна */
+.post-modal-body {
+    padding: 0.2rem 0 0.5rem 0;
+}
+
+/* Текст поста в модалке */
+.post-modal-text {
+    color: #1a1a2e;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0.5rem 0 0.8rem 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Поле редактирования в модалке */
+.post-modal-edit-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 0.7rem 1rem;
+    border: 2px solid #4a6cf7;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    line-height: 1.6;
+    resize: vertical;
+    box-sizing: border-box;
+    margin: 0.5rem 0 0.8rem 0;
+}
+
+.post-modal-edit-textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.12);
+}
+
+/* Изображение в модалке */
+.post-modal-image {
+    margin-top: 0.5rem;
+}
+
+.post-modal-image img {
+    max-width: 100%;
+    max-height: 350px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* Подвал модалки */
+.post-modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.8rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.post-modal-footer-left {
+    display: flex;
+    align-items: center;
+}
+
+.post-modal-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.modal-like {
+    font-size: 1.1rem;
+}
+
+.post-modal-footer-right .btn-save {
+    padding: 0.3rem 0.9rem;
+    background: #28a745;
+    color: #ffffff;
+    border: 1.5px solid #28a745;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.post-modal-footer-right .btn-save:hover {
+    background: #218838;
+}
+
+.post-modal-footer-right .btn-cancel {
+    padding: 0.3rem 0.9rem;
+    background: transparent;
+    color: #dc3545;
+    border: 1.5px solid #dc3545;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.post-modal-footer-right .btn-cancel:hover {
+    background: #dc3545;
+    color: #ffffff;
+}
+
+/* Стиль для поста при наведении (кликабельность) */
+.post-item {
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.post-item:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+/* Отключаем клик на кнопки внутри поста */
+.post-item .btn-like,
+.post-item .dropdown-toggle,
+.post-item .btn-save,
+.post-item .btn-cancel {
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
+}
+
+@media (max-width: 600px) {
+    .post-modal-content {
+        padding: 1rem;
+        width: 98%;
+    }
+
+    .post-modal-header {
+        flex-wrap: wrap;
+        gap: 0.3rem;
+    }
+
+    .post-modal-date-group {
+        margin-left: 0;
+        width: 100%;
+        order: 10;
+    }
+}

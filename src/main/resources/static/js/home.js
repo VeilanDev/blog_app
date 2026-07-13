@@ -427,9 +427,7 @@ function createPostElement(post) {
     let formattedDate = '';
 
     if (post.createdAt && Array.isArray(post.createdAt)) {
-        // Формат: [год, месяц, день, час, минута, секунда, наносекунды]
         const [year, month, day, hour, minute, second] = post.createdAt;
-        // В JavaScript месяц начинается с 0 (январь = 0), поэтому month - 1
         const date = new Date(year, month - 1, day, hour, minute, second);
 
         if (!isNaN(date.getTime())) {
@@ -442,7 +440,6 @@ function createPostElement(post) {
             });
         }
     } else if (typeof post.createdAt === 'string') {
-        // Если вдруг придет строка
         const date = new Date(post.createdAt);
         if (!isNaN(date.getTime())) {
             formattedDate = date.toLocaleString('ru-RU', {
@@ -460,9 +457,13 @@ function createPostElement(post) {
     const redactedHtml = post.redacted ? '<span class="redacted">(ред.)</span> ' : '';
     const heart = post.likedByCurrentUser ? '❤️' : '🤍';
 
+    const currentUserLogin = document.querySelector('meta[name="currentUserLogin"]')?.content || '';
+    const showDropdown = post.authorLogin === currentUserLogin;
+
     return `
         <li>
-            <div class="post-item" id="post-${post.id}">
+            <!-- Клик на весь пост открывает модалку, но кнопки перехватывают событие -->
+            <div class="post-item" id="post-${post.id}" onclick="openPostModal(${post.id})">
                 <div class="post-header">
                     <span class="post-author">${post.authorName || post.authorLogin}</span>
                     <div class="post-header-right">
@@ -470,21 +471,49 @@ function createPostElement(post) {
                             ${redactedHtml}
                             ${formattedDate}
                         </span>
+                        ${showDropdown ? `
+                        <div class="dropdown" onclick="event.stopPropagation();">
+                            <button class="dropdown-toggle" onclick="event.stopPropagation(); toggleDropdown(this)" type="button">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="5" r="1.5"/>
+                                    <circle cx="12" cy="12" r="1.5"/>
+                                    <circle cx="12" cy="19" r="1.5"/>
+                                </svg>
+                            </button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item btn-edit-dropdown" onclick="event.stopPropagation(); enableEdit(this)" type="button">Редактировать</button>
+                                <button class="dropdown-item btn-delete-dropdown" onclick="event.stopPropagation(); confirmDelete(this)" type="button">Удалить</button>
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
-                <div class="post-content">
-                    <p class="post-text">${escapeHtml(post.text)}</p>
+                <div class="post-content" onclick="event.stopPropagation();">
+                    <p class="post-text" id="text-${post.id}">${escapeHtml(post.text)}</p>
+                    <textarea class="post-edit-textarea" id="edit-${post.id}" style="display: none;">${escapeHtml(post.text)}</textarea>
                 </div>
-                ${post.imagePath ? `<div class="post-image"><img src="${post.imagePath}" alt="Изображение к посту" /></div>` : ''}
-                <div class="post-footer">
+                ${post.imagePath ? `<div class="post-image" onclick="event.stopPropagation();"><img src="${post.imagePath}" alt="Изображение к посту" /></div>` : ''}
+                <div class="post-footer" onclick="event.stopPropagation();">
                     <div class="post-footer-left">
                         <button class="btn-like"
                                 data-post-id="${post.id}"
-                                onclick="toggleLike(this)">
+                                onclick="event.stopPropagation(); toggleLike(this)">
                             <span class="heart ${post.likedByCurrentUser ? 'liked' : ''}">${heart}</span>
                             <span class="likes-count">${post.likes || 0}</span>
                         </button>
                     </div>
+                     ${showDropdown ? `
+                    <div class="post-footer-right" onclick="event.stopPropagation();">
+                        <button class="btn-save"
+                                data-post-id="${post.id}"
+                                style="display: none;"
+                                onclick="event.stopPropagation(); savePost(this)">Сохранить</button>
+                        <button class="btn-cancel"
+                                data-post-id="${post.id}"
+                                style="display: none;"
+                                onclick="event.stopPropagation(); cancelEdit(this)">Отмена</button>
+                    </div>
+                    ` : ''}
                 </div>
             </div>
         </li>
@@ -605,4 +634,297 @@ document.addEventListener('DOMContentLoaded', function() {
         postList.innerHTML = '';
     }
     loadMorePosts();
+});
+
+
+/**
+ * Текущий ID поста в модалке
+ */
+let currentModalPostId = null;
+
+/**
+ * Открытие модального окна с постом
+ */
+function openPostModal(postId) {
+    currentModalPostId = postId;
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    fetch(`/api/posts/${postId}/detail`, {
+        method: 'GET',
+        headers: {
+            [csrfHeader]: csrfToken
+        }
+    })
+    .then(response => response.json())
+    .then(post => {
+        // Заполняем данные
+        document.getElementById('modalPostAuthor').textContent = post.authorName || post.authorLogin;
+        document.getElementById('modalPostLogin').textContent = post.authorLogin;
+
+        // Форматируем дату
+        let formattedDate = '';
+        if (post.createdAt && Array.isArray(post.createdAt)) {
+            const [year, month, day, hour, minute] = post.createdAt;
+            const date = new Date(year, month - 1, day, hour, minute);
+            if (!isNaN(date.getTime())) {
+                formattedDate = date.toLocaleString('ru-RU', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+        document.getElementById('modalPostDate').textContent = formattedDate;
+
+        // Отметка (ред.)
+        const redactedSpan = document.getElementById('modalPostRedacted');
+        if (post.redacted) {
+            redactedSpan.style.display = 'inline';
+        } else {
+            redactedSpan.style.display = 'none';
+        }
+
+        // Текст поста
+        document.getElementById('modalPostDetailText').textContent = post.text;
+        document.getElementById('modalEditText').value = post.text;
+        document.getElementById('modalEditText').style.display = 'none';
+        document.getElementById('modalPostDetailText').style.display = 'block';
+
+        // Изображение
+        const imageContainer = document.getElementById('modalPostImage');
+        const imageSrc = document.getElementById('modalPostImageSrc');
+        if (post.imagePath) {
+            imageContainer.style.display = 'block';
+            imageSrc.src = post.imagePath;
+        } else {
+            imageContainer.style.display = 'none';
+        }
+
+        // Лайк
+        const heartSpan = document.getElementById('modalHeart');
+        if (post.likedByCurrentUser) {
+            heartSpan.textContent = '❤️';
+            heartSpan.classList.add('liked');
+        } else {
+            heartSpan.textContent = '🤍';
+            heartSpan.classList.remove('liked');
+        }
+        document.getElementById('modalLikesCount').textContent = post.likes || 0;
+
+        // Сохраняем ID поста
+        document.getElementById('postModal').dataset.postId = postId;
+        document.getElementById('postModal').dataset.isAuthor = post.isAuthor ? 'true' : 'false';
+
+        // Показываем/скрываем dropdown для автора
+        const dropdown = document.getElementById('modalPostDropdown');
+        if (post.isAuthor) {
+            dropdown.style.display = 'inline-block';
+        } else {
+            dropdown.style.display = 'none';
+        }
+
+        // Скрываем кнопки сохранения/отмены
+        document.getElementById('modalFooterActions').style.display = 'none';
+
+        // Показываем модальное окно
+        document.getElementById('postModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    })
+    .catch(error => {
+        console.error('Error loading post detail:', error);
+        alert('Ошибка при загрузке поста');
+    });
+}
+
+/**
+ * Закрытие модального окна поста
+ */
+function closePostModal() {
+    document.getElementById('postModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    currentModalPostId = null;
+}
+
+/**
+ * Редактирование из модального окна
+ */
+function editFromModal() {
+    const modal = document.getElementById('postModal');
+    const postId = modal.dataset.postId;
+    const postItem = document.getElementById('post-' + postId);
+
+    // Показываем поле редактирования
+    const textElement = document.getElementById('modalPostDetailText');
+    const editElement = document.getElementById('modalEditText');
+
+    textElement.style.display = 'none';
+    editElement.style.display = 'block';
+    editElement.value = textElement.textContent.trim();
+
+    // Показываем кнопки сохранения/отмены
+    document.getElementById('modalFooterActions').style.display = 'flex';
+
+    // Закрываем dropdown
+    const dropdown = document.getElementById('modalPostDropdown');
+    if (dropdown) {
+        const menu = dropdown.querySelector('.dropdown-menu');
+        if (menu) {
+            menu.classList.remove('show');
+        }
+    }
+}
+
+/**
+ * Отмена редактирования из модального окна
+ */
+function cancelEditFromModal() {
+    const textElement = document.getElementById('modalPostDetailText');
+    const editElement = document.getElementById('modalEditText');
+
+    // Возвращаем исходное состояние
+    textElement.style.display = 'block';
+    editElement.style.display = 'none';
+    document.getElementById('modalFooterActions').style.display = 'none';
+}
+
+/**
+ * Сохранение поста из модального окна
+ */
+function savePostFromModal() {
+    const modal = document.getElementById('postModal');
+    const postId = modal.dataset.postId;
+    const editElement = document.getElementById('modalEditText');
+    const newText = editElement.value.trim();
+
+    if (!newText) {
+        alert('Текст поста не может быть пустым');
+        return;
+    }
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    fetch('/posts/' + postId + '/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            [csrfHeader]: csrfToken
+        },
+        body: 'text=' + encodeURIComponent(newText)
+    })
+    .then(response => {
+        if (response.ok) {
+            // Обновляем текст в модалке
+            const textElement = document.getElementById('modalPostDetailText');
+            textElement.textContent = newText;
+
+            // Обновляем текст на странице
+            const postText = document.getElementById('text-' + postId);
+            if (postText) {
+                postText.textContent = newText;
+            }
+
+            // Добавляем отметку (ред.)
+            const redactedSpan = document.getElementById('modalPostRedacted');
+            redactedSpan.style.display = 'inline';
+
+            const dateSpan = document.querySelector(`#post-${postId} .post-date`);
+            if (dateSpan && !dateSpan.querySelector('.redacted')) {
+                const redactedInPost = document.createElement('span');
+                redactedInPost.className = 'redacted';
+                redactedInPost.textContent = '(ред.) ';
+                dateSpan.prepend(redactedInPost);
+            }
+
+            // Возвращаем обычный режим
+            cancelEditFromModal();
+        } else {
+            alert('Ошибка при сохранении поста');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при сохранении поста');
+    });
+}
+
+/**
+ * Лайк из модального окна
+ */
+function toggleLikeFromModal(event) {
+    if (event) {
+        event.stopPropagation();
+    }
+
+    const modal = document.getElementById('postModal');
+    const postId = modal.dataset.postId;
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    fetch('/posts/' + postId + '/like', {
+        method: 'POST',
+        headers: {
+            [csrfHeader]: csrfToken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const heartSpan = document.getElementById('modalHeart');
+            if (data.action === 'liked') {
+                heartSpan.textContent = '❤️';
+                heartSpan.classList.add('liked');
+            } else {
+                heartSpan.textContent = '🤍';
+                heartSpan.classList.remove('liked');
+            }
+            document.getElementById('modalLikesCount').textContent = data.likesCount;
+        } else {
+            alert(data.message || 'Ошибка при обновлении лайка');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при обновлении лайка');
+    });
+}
+
+/**
+ * Удаление из модального окна
+ */
+function deleteFromModal() {
+    const modal = document.getElementById('postModal');
+    const postId = modal.dataset.postId;
+    const postItem = document.getElementById('post-' + postId);
+
+    closePostModal();
+
+    setTimeout(() => {
+        const deleteBtn = postItem.querySelector('.btn-delete-dropdown');
+        if (deleteBtn) {
+            deleteBtn.click();
+        } else {
+            confirmDelete(deleteBtn);
+        }
+    }, 300);
+}
+
+// Закрытие модального окна по клику на фон
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('postModal');
+    if (event.target === modal) {
+        closePostModal();
+    }
+});
+
+// Закрытие модального окна по Escape
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closePostModal();
+    }
 });

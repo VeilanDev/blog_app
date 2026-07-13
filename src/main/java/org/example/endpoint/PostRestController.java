@@ -1,5 +1,6 @@
 package org.example.endpoint;
 
+import org.example.dto.PostDetailDto;
 import org.example.dto.PostResponseDto;
 import org.example.service.PostService;
 import org.springframework.data.domain.Page;
@@ -62,5 +63,14 @@ public class PostRestController {
         response.put("pageSize", posts.getSize());
 
         return response;
+    }
+
+    @GetMapping("/{id}/detail")
+    public PostDetailDto getPostDetail(
+            Authentication authentication,
+            @PathVariable Long id
+    ) {
+        String currentUserLogin = authentication.getName();
+        return postService.getPostDetail(id, currentUserLogin);
     }
 }

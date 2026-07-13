@@ -42,6 +42,9 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikesPost> likesList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> commentsList = new ArrayList<>();
+
     public Post() {}
     public Post(String text, String imagePath) {
         this.text = text;
@@ -77,6 +80,10 @@ public class Post {
         return likesList;
     }
 
+    public List<Comment> getCommentsList() {
+        return commentsList;
+    }
+
     public Integer getLikes() {
         return likesList.size();
     }
@@ -107,6 +114,10 @@ public class Post {
 
     public void setLikesList(List<LikesPost> likesList) {
         this.likesList = likesList;
+    }
+
+    public void setCommentsList(List<Comment> commentsList) {
+        this.commentsList = commentsList;
     }
 
     public void setRedacted(Boolean redacted) {

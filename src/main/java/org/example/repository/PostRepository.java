@@ -1,5 +1,6 @@
 package org.example.repository;
 
+import org.example.dto.PostDetailDto;
 import org.example.dto.PostResponseDto;
 import org.example.entity.Post;
 import org.example.entity.User;
@@ -58,4 +59,17 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // проверка, поставил ли пользователь лайк на пост
     @Query("SELECT COUNT(lp) > 0 FROM LikesPost lp WHERE lp.post.id = :postId AND lp.user.login = :login")
     Boolean hasUserLiked(@Param("postId") Long postId, @Param("login") String login);
+
+    @Query(
+            "SELECT new org.example.dto.PostDetailDto( " +
+                    "p.id, p.text, p.imagePath, " +
+                    "u.name, u.login, " +
+                    "p.createdAt, p.updatedAt, " +
+                    "p.redacted, " +
+                    "SIZE(p.likesList)) " +
+                    "FROM Post p " +
+                    "JOIN p.author u " +
+                    "WHERE p.id = :postId"
+    )
+    Optional<PostDetailDto> findPostDetailById(@Param("postId") Long postId);
 }
