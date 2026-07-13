@@ -88,11 +88,15 @@
 | FK  | post_id |     |
 | FK  | user_id |     |
 
-### comments
+### comments_post
 
-| PK  | id  |
-| :-: | --- |
-|     |     |
+| PK  | id         |          |
+| :-: | ---------- | -------- |
+| FK  | post_id    |          |
+| FK  | author_id  |          |
+|     | text       | not null |
+|     | created_at |          |
+|     | updated_at |          |
 
 ---
 
