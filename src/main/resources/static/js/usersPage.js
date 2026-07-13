@@ -65,11 +65,12 @@ function loadMoreUsers() {
 function createUserElement(user) {
     const displayName = user.name || user.login;
     const isCurrentUser = user.login === currentUserLogin;
-    const currentUserLabel = isCurrentUser ? ' <span class="current-user-badge">(Вы)</span>' : '';
+    const currentUserLabel = isCurrentUser ? ' <span class="user-name">(Вы)</span>' : '';
 
     return `
         <li>
-            <div class="user-item">
+            <!-- Клик на всю карточку → переход в профиль -->
+            <div class="user-item" onclick="window.location.href='/home/${escapeHtml(user.login)}'">
                 <div class="user-avatar" hidden>
                     <span class="avatar-placeholder">${displayName.charAt(0).toUpperCase()}</span>
                 </div>
@@ -77,9 +78,7 @@ function createUserElement(user) {
                     <div class="user-name">${escapeHtml(displayName)}${currentUserLabel}</div>
                     <div class="user-login">${escapeHtml(user.login)}</div>
                 </div>
-                <div class="user-actions">
-                    <a href="/home/${escapeHtml(user.login)}" class="btn-view-profile">Перейти в профиль</a>
-                </div>
+                <!-- Кнопка удалена, переход осуществляется по клику на всю карточку -->
             </div>
         </li>
     `;
@@ -121,7 +120,7 @@ function hideLoadingIndicator() {
 }
 
 /**
- * Показывает сообщение "Все пользователи загружены"
+ * Показывает сообщение "Конец списка пользователей"
  */
 function showNoMoreUsers() {
     let noMore = document.getElementById('noMoreUsers');
@@ -129,7 +128,7 @@ function showNoMoreUsers() {
         noMore = document.createElement('div');
         noMore.id = 'noMoreUsers';
         noMore.className = 'no-more-users';
-        noMore.textContent = '🎉 Все пользователи загружены';
+        noMore.textContent = 'Конец списка пользователей';
         document.querySelector('.users-list').parentNode.appendChild(noMore);
     }
     noMore.style.display = 'block';
