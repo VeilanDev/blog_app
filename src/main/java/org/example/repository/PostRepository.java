@@ -32,10 +32,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // получение постов с пагинацией
     @Query(
             "SELECT new org.example.dto.PostResponseDto( " +
-                    "p.id, p.text, p.imagePath, " +
+                    "p.id, p.text, '' as htmlContent, p.imagePath, " +
                     "u.name, u.login, " +
                     "p.createdAt, p.updatedAt, " +
                     "p.redacted, " +
+                    "p.useMarkdown, " +
                     "SIZE(p.likesList)," +
                     "SIZE(p.commentsList)) " +
                     "FROM Post p " +
@@ -47,10 +48,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // получения постов пользователя с пагинацией
     @Query(
             "SELECT new org.example.dto.PostResponseDto( " +
-                    "p.id, p.text, p.imagePath, " +
+                    "p.id, p.text, '' as htmlContent, p.imagePath, " +
                     "u.name, u.login, " +
                     "p.createdAt, p.updatedAt, " +
                     "p.redacted, " +
+                    "p.useMarkdown, " +
                     "SIZE(p.likesList), " +
                     "SIZE(p.commentsList))" +
                     "FROM Post p " +
@@ -70,6 +72,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                     "u.name, u.login, " +
                     "p.createdAt, p.updatedAt, " +
                     "p.redacted, " +
+                    "p.useMarkdown, " +
                     "SIZE(p.likesList), " +
                     "SIZE(p.commentsList)) " +
                     "FROM Post p " +

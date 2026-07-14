@@ -31,6 +31,9 @@ public class Post {
     @Column(name = "redacted", nullable = false)
     private Boolean redacted = false;
 
+    @Column(name = "use_markdown", nullable = false)
+    private Boolean useMarkdown = false;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -122,5 +125,13 @@ public class Post {
 
     public void setRedacted(Boolean redacted) {
         this.redacted = redacted;
+    }
+
+    public Boolean getUseMarkdown() {
+        return useMarkdown;
+    }
+
+    public void setUseMarkdown(Boolean useMarkdown) {
+        this.useMarkdown = useMarkdown;
     }
 }

@@ -18,10 +18,16 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final MarkdownService markdownService;
 
-    public PostService(PostRepository postRepository, CommentRepository commentRepository) {
+    public PostService(
+            PostRepository postRepository,
+            CommentRepository commentRepository,
+            MarkdownService markdownService
+    ) {
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+        this.markdownService = markdownService;
     }
 
     public Page<PostResponseDto> getPosts(int page, int size, String currentUserLogin) {
@@ -33,7 +39,15 @@ public class PostService {
                 post -> {
                     boolean liked = postRepository.hasUserLiked(post.getId(), currentUserLogin);
                     post.setLikedByCurrentUser(liked);
+
+                    if (Boolean.TRUE.equals(post.getUseMarkdown())) {
+                        post.setHtmlContent(markdownService.renderMarkdown(post.getText()));
+                    } else {
+                        post.setHtmlContent(escapeHtml(post.getText()));
+                    }
                 });
+
+
 
         return posts;
     }
@@ -47,6 +61,12 @@ public class PostService {
                 post -> {
                     boolean liked = postRepository.hasUserLiked(post.getId(), currentUserLogin);
                     post.setLikedByCurrentUser(liked);
+
+                    if (Boolean.TRUE.equals(post.getUseMarkdown())) {
+                        post.setHtmlContent(markdownService.renderMarkdown(post.getText()));
+                    } else {
+                        post.setHtmlContent(escapeHtml(post.getText()));
+                    }
                 });
 
         return posts;
@@ -65,12 +85,27 @@ public class PostService {
 
         Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<CommentResponseDto> commentsPage = commentRepository.findCommentsByPostIdPaged(postId, pageable);
-        List<CommentResponseDto> comments = commentsPage.getContent();
 
+        if (Boolean.TRUE.equals(post.getUseMarkdown())) {
+            post.setHtmlContent(markdownService.renderMarkdown(post.getText()));
+        } else {
+            post.setHtmlContent(escapeHtml(post.getText()));
+        }
+
+        List<CommentResponseDto> comments = commentsPage.getContent();
         post.setComments(comments);
 
         return post;
     }
 
+    private String escapeHtml(String text) {
+        if (text == null) return "";
+        return text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;")
+                .replace("\n", "<br>");
+    }
 
 }

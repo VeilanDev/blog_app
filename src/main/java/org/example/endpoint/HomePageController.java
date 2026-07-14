@@ -3,6 +3,7 @@ package org.example.endpoint;
 import org.example.entity.Post;
 import org.example.repository.UserRepository;
 import org.example.service.LikePostService;
+import org.example.service.MarkdownService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -17,10 +18,16 @@ public class HomePageController {
 
     private final UserRepository userRepository;
     private final LikePostService likePostService;
+    private final MarkdownService markdownService;
 
-    public HomePageController(UserRepository userRepository, LikePostService likePostService) {
+    public HomePageController(
+            UserRepository userRepository,
+            LikePostService likePostService,
+            MarkdownService markdownService
+    ) {
         this.userRepository = userRepository;
         this.likePostService = likePostService;
+        this.markdownService = markdownService;
     }
 
     @GetMapping("/home")
@@ -52,6 +59,8 @@ public class HomePageController {
 
         model.addAttribute("loginUserPage", loginUserPage);
         model.addAttribute("post", new Post());
+
+        model.addAttribute("markdownService", markdownService);
 
         return "home";
     }

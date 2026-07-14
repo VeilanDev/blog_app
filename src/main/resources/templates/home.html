@@ -54,6 +54,18 @@
                           required></textarea>
             </div>
 
+            <!-- ЧЕКБОКС -->
+            <div class="form-group checkbox-group">
+                <label>
+                    <input type="checkbox"
+                           name="useMarkdown"
+                           th:field="*{useMarkdown}"
+                           value="true" />
+                    Использовать Markdown
+                </label>
+                <span class="checkbox-hint" hidden>Поддерживается форматирование заголовков, списков, таблиц и т.д.</span>
+            </div>
+
             <div class="form-group" hidden>
                 <label for="postImage">Изображение (необязательно)</label>
                 <input type="file"
@@ -91,10 +103,11 @@
             <!-- Заголовок: имя, логин, дата + (ред.), действия, крестик -->
             <div class="post-modal-header">
                 <span class="post-modal-author" id="modalPostAuthor">Автор</span>
-                <span class="post-modal-login" id="modalPostLogin">@логин</span>
+                <span class="post-modal-login" id="modalPostLogin">логин</span>
 
                 <!-- Блок даты и (ред.) прижат к правому краю -->
                 <div class="post-modal-date-group">
+                    <span class="post-modal-markdown" id="modalPostMarkdown" style="display: none;">(md) </span>
                     <span class="post-modal-redacted" id="modalPostRedacted" style="display: none;">(ред.) </span>
                     <span class="post-modal-date" id="modalPostDate">12.07.2026 15:30</span>
                 </div>
@@ -123,7 +136,7 @@
                 <!-- Поле для редактирования (скрыто по умолчанию) -->
                 <textarea class="post-modal-edit-textarea" id="modalEditText" style="display: none;">Текст поста</textarea>
                 <!-- Текст поста (отображается по умолчанию) -->
-                <p class="post-modal-text" id="modalPostDetailText">Текст поста</p>
+                <div class="post-modal-text markdown-body" id="modalPostDetailText">Текст поста</div>
 
                 <div class="post-modal-image" id="modalPostImage" style="display: none;">
                     <img id="modalPostImageSrc" src="" alt="Изображение к посту" />

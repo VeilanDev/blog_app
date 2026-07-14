@@ -62,6 +62,12 @@
             <artifactId>kafka-streams</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>0.24.0</version>
+        </dependency>
+
         <!--
              Если будете использовать код для проверки работоспособности
              то поменяйте mysql на другую БД, например h2

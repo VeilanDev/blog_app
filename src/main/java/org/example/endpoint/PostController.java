@@ -26,13 +26,16 @@ public class PostController {
     @PostMapping("/posts/create")
     public String createPost(
             Authentication authentication,
-            @ModelAttribute Post post
+            @ModelAttribute Post post,
+            @RequestParam(value = "useMarkdown", required = false) Boolean useMarkdown
     ) {
         String login = authentication.getName();
         userRepository.findByLogin(login).ifPresent(
                 user ->
                         post.setAuthor(user)
         );
+        post.setUseMarkdown(useMarkdown != null && useMarkdown);
+
         postRepository.save(post);
 
         return "redirect:/home/" + login;

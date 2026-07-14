@@ -6,12 +6,14 @@ import java.util.List;
 public class PostDetailDto {
     private Long id;
     private String text;
+    private String htmlContent;
     private String imagePath;
     private String authorName;
     private String authorLogin;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Boolean redacted;
+    private Boolean useMarkdown;
     private Integer likes;
     private Boolean likedByCurrentUser;
     private Boolean isAuthor;
@@ -28,6 +30,7 @@ public class PostDetailDto {
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
             Boolean redacted,
+            Boolean useMarkdown,
             Integer likes,
             Integer commentsCount
     ) {
@@ -39,11 +42,13 @@ public class PostDetailDto {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.redacted = redacted;
+        this.useMarkdown = useMarkdown;
         this.likes = likes;
         this.likedByCurrentUser = false;
         this.isAuthor = false;
         this.comments = List.of();
         this.commentsCount = commentsCount;
+        this.htmlContent = "";
     }
 
     public Long getId() { return id; }
@@ -93,5 +98,19 @@ public class PostDetailDto {
     }
     public void setCommentsCount(Integer commentsCount) {
         this.commentsCount = commentsCount;
+    }
+
+    public String getHtmlContent() {
+        return htmlContent;
+    }
+    public void setHtmlContent(String htmlContent) {
+        this.htmlContent = htmlContent;
+    }
+
+    public Boolean getUseMarkdown() {
+        return useMarkdown;
+    }
+    public void setUseMarkdown(Boolean useMarkdown) {
+        this.useMarkdown = useMarkdown;
     }
 }

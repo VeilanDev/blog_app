@@ -49,18 +49,23 @@ function enableEdit(button) {
 
     const postId = postItem.id.replace('post-', '');
 
-    const textElement = document.getElementById('text-' + postId);
+    // Ищем контейнер с текстом поста
+    const textContainer = postItem.querySelector('.post-text');
     const editElement = document.getElementById('edit-' + postId);
 
-    if (!textElement || !editElement) {
-        console.warn('Text or edit element not found for post:', postId);
+    if (!textContainer || !editElement) {
+        console.warn('Text container or edit element not found for post:', postId);
         return;
     }
 
-    // Скрываем текст, показываем поле для редактирования
-    textElement.style.display = 'none';
+    // Получаемтекст из textarea
+    // Или из атрибута data-text
+    const originalText = editElement.value || textContainer.textContent.trim();
+
+    // Скрываем контейнер с текстом, показываем поле для редактирования
+    textContainer.style.display = 'none';
     editElement.style.display = 'block';
-    editElement.value = textElement.textContent.trim();
+    editElement.value = originalText;
 
     // Закрываем выпадающее меню
     const dropdown = button.closest('.dropdown');
@@ -83,109 +88,90 @@ function enableEdit(button) {
 }
 
 /**
- * Отмена редактирования
- */
-function cancelEdit(button) {
-    const postItem = button.closest('.post-item');
-    if (!postItem) {
-        console.warn('Post item not found');
-        return;
-    }
+  * Отмена редактирования
+  */
+ function cancelEdit(button) {
+     const postItem = button.closest('.post-item');
+     if (!postItem) {
+         console.warn('Post item not found');
+         return;
+     }
 
-    const postId = postItem.id.replace('post-', '');
+     const postId = postItem.id.replace('post-', '');
 
-    const textElement = document.getElementById('text-' + postId);
-    const editElement = document.getElementById('edit-' + postId);
+     const textContainer = postItem.querySelector('.post-text');
+     const editElement = document.getElementById('edit-' + postId);
 
-    if (!textElement || !editElement) {
-        console.warn('Text or edit element not found for post:', postId);
-        return;
-    }
+     if (!textContainer || !editElement) {
+         console.warn('Text container or edit element not found for post:', postId);
+         return;
+     }
 
-    // Возвращаем исходное состояние
-    textElement.style.display = 'block';
-    editElement.style.display = 'none';
+     // Возвращаем исходное состояние
+     textContainer.style.display = 'block';
+     editElement.style.display = 'none';
 
-    // Скрываем кнопки сохранения/отмены
-    const footer = postItem.querySelector('.post-footer');
-    if (footer) {
-        const saveBtn = footer.querySelector('.btn-save');
-        const cancelBtn = footer.querySelector('.btn-cancel');
+     // Скрываем кнопки сохранения/отмены
+     const footer = postItem.querySelector('.post-footer');
+     if (footer) {
+         const saveBtn = footer.querySelector('.btn-save');
+         const cancelBtn = footer.querySelector('.btn-cancel');
 
-        if (saveBtn) saveBtn.style.display = 'none';
-        if (cancelBtn) cancelBtn.style.display = 'none';
-    }
-}
+         if (saveBtn) saveBtn.style.display = 'none';
+         if (cancelBtn) cancelBtn.style.display = 'none';
+     }
+ }
 
-/**
- * Сохранение поста
- */
-function savePost(button) {
-    const postItem = button.closest('.post-item');
-    if (!postItem) {
-        console.warn('Post item not found');
-        return;
-    }
+ /**
+  * Сохранение поста
+  */
+ function savePost(button) {
+     const postItem = button.closest('.post-item');
+     if (!postItem) {
+         console.warn('Post item not found');
+         return;
+     }
 
-    const postId = postItem.id.replace('post-', '');
-    const editElement = document.getElementById('edit-' + postId);
+     const postId = postItem.id.replace('post-', '');
+     const editElement = document.getElementById('edit-' + postId);
 
-    if (!editElement) {
-        console.warn('Edit element not found for post:', postId);
-        return;
-    }
+     if (!editElement) {
+         console.warn('Edit element not found for post:', postId);
+         return;
+     }
 
-    const newText = editElement.value.trim();
+     const newText = editElement.value.trim();
 
-    if (!newText) {
-        alert('Текст поста не может быть пустым');
-        return;
-    }
+     if (!newText) {
+         alert('Текст поста не может быть пустым');
+         return;
+     }
 
-    // Получаем CSRF токен
-    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+     // Получаем CSRF токен
+     const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
-    // Отправляем запрос на сервер
-    fetch('/posts/' + postId + '/update', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            [csrfHeader]: csrfToken
-        },
-        body: 'text=' + encodeURIComponent(newText)
-    })
-    .then(response => {
-        if (response.ok) {
-            // Обновляем текст на странице
-            const textElement = document.getElementById('text-' + postId);
-            if (textElement) {
-                textElement.textContent = newText;
-            }
-
-            // Обновляем отметку (ред.)
-            const dateSpan = postItem.querySelector('.post-date');
-            if (dateSpan) {
-                let redactedSpan = dateSpan.querySelector('.redacted');
-                if (!redactedSpan) {
-                    redactedSpan = document.createElement('span');
-                    redactedSpan.className = 'redacted';
-                    redactedSpan.textContent = '(ред.) ';
-                    dateSpan.prepend(redactedSpan);
-                }
-            }
-
-            // Возвращаем обычный режим
-            cancelEdit(button);
-        } else {
-            alert('Ошибка при сохранении поста');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Ошибка при сохранении поста');
-    });
-}
+     // Отправляем запрос на сервер
+     fetch('/posts/' + postId + '/update', {
+         method: 'POST',
+         headers: {
+             'Content-Type': 'application/x-www-form-urlencoded',
+             [csrfHeader]: csrfToken
+         },
+         body: 'text=' + encodeURIComponent(newText)
+     })
+     .then(response => {
+         if (response.ok) {
+             location.reload();
+         } else {
+             alert('Ошибка при сохранении поста');
+         }
+     })
+     .catch(error => {
+         console.error('Error:', error);
+         alert('Ошибка при сохранении поста');
+     });
+ }
 
 /**
  * Показывает модальное окно подтверждения удаления
@@ -198,14 +184,21 @@ function confirmDelete(button) {
     }
 
     const postId = postItem.id.replace('post-', '');
-    const textElement = document.getElementById('text-' + postId);
 
-    if (!textElement) {
-        console.warn('Text element not found for post:', postId);
+    // Ищем контейнер с текстом поста (по классу)
+    const textContainer = postItem.querySelector('.post-text');
+    if (!textContainer) {
+        console.warn('Text container not found for post:', postId);
         return;
     }
 
-    const postText = textElement.textContent.trim();
+    // Получаем текст из контейнера (очищаем от HTML-тегов)
+    let postText = textContainer.textContent.trim();
+
+    // Если текст слишком длинный, обрезаем его для отображения в модалке
+    if (postText.length > 200) {
+        postText = postText.substring(0, 200) + '...';
+    }
 
     // Сохраняем ID поста в data-атрибуте модального окна
     const modal = document.getElementById('deleteModal');
@@ -460,6 +453,15 @@ function createPostElement(post) {
     const currentUserLogin = document.querySelector('meta[name="currentUserLogin"]')?.content || '';
     const showDropdown = post.authorLogin === currentUserLogin;
 
+    const markdownHtml = post.useMarkdown ? '<span class="redacted">(md)</span> ' : '';
+
+    let contentHtml;
+    if (post.useMarkdown == true) {
+        contentHtml = post.htmlContent
+    } else {
+        contentHtml = post.text;
+    }
+
     return `
         <li>
             <!-- Клик на весь пост открывает модалку, но кнопки перехватывают событие -->
@@ -468,6 +470,7 @@ function createPostElement(post) {
                     <span class="post-author">${post.authorName || post.authorLogin}</span>
                     <div class="post-header-right">
                         <span class="post-date">
+                            ${markdownHtml}
                             ${redactedHtml}
                             ${formattedDate}
                         </span>
@@ -481,16 +484,16 @@ function createPostElement(post) {
                                 </svg>
                             </button>
                             <div class="dropdown-menu">
-                                <button class="dropdown-item btn-edit-dropdown" onclick="event.stopPropagation(); enableEdit(this)" type="button">Редактировать</button>
-                                <button class="dropdown-item btn-delete-dropdown" onclick="event.stopPropagation(); confirmDelete(this)" type="button">Удалить</button>
+                                <button class="comment-dropdown-item btn-edit-comment" onclick="event.stopPropagation(); enableEdit(this)">Редактировать</button>
+                                <button class="comment-dropdown-item btn-delete-comment" onclick="event.stopPropagation(); confirmDelete(this)">Удалить</button>
                             </div>
                         </div>
                         ` : ''}
                     </div>
                 </div>
                 <div class="post-content" onclick="event.stopPropagation();">
-                    <p class="post-text" id="text-${post.id}">${escapeHtml(post.text)}</p>
-                    <textarea class="post-edit-textarea" id="edit-${post.id}" style="display: none;">${escapeHtml(post.text)}</textarea>
+                    <div class="post-text ${post.useMarkdown ? 'markdown-body' : ''}">${contentHtml}</div>
+                    <textarea class="post-edit-textarea" id="edit-${post.id}" style="display: none;">${post.text}</textarea>
                 </div>
                 ${post.imagePath ? `<div class="post-image" onclick="event.stopPropagation();"><img src="${post.imagePath}" alt="Изображение к посту" /></div>` : ''}
                 <div class="post-footer" onclick="event.stopPropagation();">
@@ -657,7 +660,7 @@ function loadComments(postId) {
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
     const currentUserLogin = document.querySelector('meta[name="currentUserLogin"]')?.content || '';
 
-    fetch(`/api/comments/post/${postId}?page=0&size=50`, {
+    return fetch(`/api/comments/post/${postId}?page=0&size=20`, {
         method: 'GET',
         headers: {
             [csrfHeader]: csrfToken
@@ -670,7 +673,6 @@ function loadComments(postId) {
 
         if (data.comments && data.comments.length > 0) {
             data.comments.forEach(comment => {
-                // Устанавливаем isAuthor для каждого комментария
                 comment.isAuthor = comment.authorLogin === currentUserLogin;
                 const commentHtml = createCommentElement(comment);
                 commentsList.insertAdjacentHTML('beforeend', commentHtml);
@@ -834,43 +836,88 @@ function toggleCommentDropdown(button) {
 }
 
 /**
- * Отправка комментария
- */
-function submitComment() {
-    const modal = document.getElementById('postModal');
-    const postId = modal.dataset.postId;
-    const input = document.getElementById('commentInput');
-    const text = input.value.trim();
+  * Обновление счетчика комментариев у поста
+  */
+ function updateCommentCount(postId, newCount) {
+     // Обновляем в модальном окне
+     const modalCommentsCount = document.getElementById('modalCommentsCountValue');
+     if (modalCommentsCount) {
+         modalCommentsCount.textContent = newCount;
+     }
 
-    if (!text) {
-        alert('Напишите текст комментария');
-        return;
-    }
+     // Обновляем в списке постов
+     const postItem = document.getElementById('post-' + postId);
+     if (postItem) {
+         const commentsCountSpan = postItem.querySelector('.post-comments-count span');
+         if (commentsCountSpan) {
+             commentsCountSpan.textContent = newCount;
+         }
+     }
+ }
 
-    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+ /**
+  * Отправка комментария
+  */
+ function submitComment() {
+     const modal = document.getElementById('postModal');
+     const postId = modal.dataset.postId;
+     const input = document.getElementById('commentInput');
+     const text = input.value.trim();
 
-    fetch('/comments/create', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            [csrfHeader]: csrfToken
-        },
-        body: `postId=${postId}&text=${encodeURIComponent(text)}`
-    })
-    .then(response => {
-        if (response.ok) {
-            input.value = '';
-            loadComments(postId);
-        } else {
-            alert('Ошибка при добавлении комментария');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Ошибка при добавлении комментария');
-    });
-}
+     if (!text) {
+         alert('Напишите текст комментария');
+         return;
+     }
+
+     const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+     fetch('/comments/create', {
+         method: 'POST',
+         headers: {
+             'Content-Type': 'application/x-www-form-urlencoded',
+             [csrfHeader]: csrfToken
+         },
+         body: `postId=${postId}&text=${encodeURIComponent(text)}`
+     })
+     .then(response => {
+         if (response.ok) {
+             // Очищаем поле ввода
+             input.value = '';
+
+             // Загружаем обновленный список комментариев
+             loadComments(postId);
+
+             // Получаем актуальное количество комментариев
+             return fetch(`/api/posts/${postId}/detail`, {
+                 method: 'GET',
+                 headers: {
+                     [csrfHeader]: csrfToken
+                 }
+             });
+         } else {
+             alert('Ошибка при добавлении комментария');
+             throw new Error('Failed to add comment');
+         }
+     })
+     .then(response => response.json())
+     .then(post => {
+         // Обновляем счетчик комментариев
+         if (post && post.commentsCount !== undefined) {
+             updateCommentCount(postId, post.commentsCount);
+         }
+     })
+     .catch(error => {
+         console.error('Error:', error);
+         // Если не удалось получить обновленный пост, просто увеличиваем счетчик на 1
+         // (это может быть неточно, но лучше чем ничего)
+         const currentModalCount = document.getElementById('modalCommentsCountValue');
+         if (currentModalCount) {
+             const currentCount = parseInt(currentModalCount.textContent) || 0;
+             updateCommentCount(postId, currentCount + 1);
+         }
+     });
+ }
 
 /**
  * Редактирование комментария
@@ -906,45 +953,7 @@ function cancelEditComment(commentId) {
 }
 
 /**
- * Сохранение комментария
- */
-function saveComment(commentId) {
-    const editElement = document.getElementById('comment-edit-' + commentId);
-    const newText = editElement.value.trim();
-
-    if (!newText) {
-        alert('Текст комментария не может быть пустым');
-        return;
-    }
-
-    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
-
-    fetch('/comments/' + commentId + '/update', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            [csrfHeader]: csrfToken
-        },
-        body: 'text=' + encodeURIComponent(newText)
-    })
-    .then(response => {
-        if (response.ok) {
-            const modal = document.getElementById('postModal');
-            const postId = modal.dataset.postId;
-            loadComments(postId);
-        } else {
-            alert('Ошибка при сохранении комментария');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Ошибка при сохранении комментария');
-    });
-}
-
-/**
- * Удаление комментария
+ * Удаление комментария (с локальным обновлением)
  */
 function deleteComment(commentId) {
     if (!confirm('Вы уверены, что хотите удалить этот комментарий?')) {
@@ -964,7 +973,18 @@ function deleteComment(commentId) {
         if (response.ok) {
             const modal = document.getElementById('postModal');
             const postId = modal.dataset.postId;
-            loadComments(postId);
+
+            // Загружаем обновленный список комментариев
+            return loadComments(postId).then(() => {
+                // Получаем текущее значение счетчика из модального окна
+                const currentModalCount = document.getElementById('modalCommentsCountValue');
+                if (currentModalCount) {
+                    const currentCount = parseInt(currentModalCount.textContent) || 0;
+                    const newCount = Math.max(0, currentCount - 1);
+                    // Обновляем счетчик локально
+                    updateCommentCount(postId, newCount);
+                }
+            });
         } else {
             alert('Ошибка при удалении комментария');
         }
@@ -974,6 +994,61 @@ function deleteComment(commentId) {
         alert('Ошибка при удалении комментария');
     });
 }
+
+ /**
+  * Сохранение комментария (после редактирования)
+  */
+ function saveComment(commentId) {
+     const editElement = document.getElementById('comment-edit-' + commentId);
+     const newText = editElement.value.trim();
+
+     if (!newText) {
+         alert('Текст комментария не может быть пустым');
+         return;
+     }
+
+     const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+     fetch('/comments/' + commentId + '/update', {
+         method: 'POST',
+         headers: {
+             'Content-Type': 'application/x-www-form-urlencoded',
+             [csrfHeader]: csrfToken
+         },
+         body: 'text=' + encodeURIComponent(newText)
+     })
+     .then(response => {
+         if (response.ok) {
+             const modal = document.getElementById('postModal');
+             const postId = modal.dataset.postId;
+
+             // Загружаем обновленный список комментариев
+             loadComments(postId);
+
+             // Счетчик комментариев не меняется при редактировании,
+             // но можно обновить на всякий случай
+             return fetch(`/api/posts/${postId}/detail`, {
+                 method: 'GET',
+                 headers: {
+                     [csrfHeader]: csrfToken
+                 }
+             });
+         } else {
+             alert('Ошибка при сохранении комментария');
+             throw new Error('Failed to save comment');
+         }
+     })
+     .then(response => response.json())
+     .then(post => {
+         if (post && post.commentsCount !== undefined) {
+             updateCommentCount(postId, post.commentsCount);
+         }
+     })
+     .catch(error => {
+         console.error('Error:', error);
+     });
+ }
 
 // Закрытие комментарий dropdown при клике вне
 document.addEventListener('click', function(event) {
@@ -1030,8 +1105,21 @@ function openPostModal(postId) {
             redactedSpan.style.display = 'none';
         }
 
-        // Текст поста
-        document.getElementById('modalPostDetailText').textContent = post.text;
+        const markdownSpan = document.getElementById('modalPostMarkdown')
+        if (post.useMarkdown == true) {
+            markdownSpan.style.display = 'inline';
+        } else {
+            markdownSpan.style.display = 'none';
+        }
+
+        let contentHtml;
+        if (post.useMarkdown == true) {
+            contentHtml = post.htmlContent
+        } else {
+            contentHtml = post.text;
+        }
+        // Текст поста с Markdown (используем htmlContent)
+        document.getElementById('modalPostDetailText').innerHTML = contentHtml;
         document.getElementById('modalEditText').value = post.text;
         document.getElementById('modalEditText').style.display = 'none';
         document.getElementById('modalPostDetailText').style.display = 'block';
@@ -1108,9 +1196,16 @@ function editFromModal() {
     const textElement = document.getElementById('modalPostDetailText');
     const editElement = document.getElementById('modalEditText');
 
+    // Получаем исходный текст из скрытого поля или из data-атрибута
+    let originalText = editElement.value;
+    if (!originalText || originalText === 'Текст поста') {
+        // Если в editElement нет текста, берем из textElement (но только текст, без HTML)
+        originalText = textElement.textContent.trim();
+    }
+
     textElement.style.display = 'none';
     editElement.style.display = 'block';
-    editElement.value = textElement.textContent.trim();
+    editElement.value = originalText;
 
     // Показываем кнопки сохранения/отмены
     document.getElementById('modalFooterActions').style.display = 'flex';
@@ -1165,38 +1260,120 @@ function savePostFromModal() {
     })
     .then(response => {
         if (response.ok) {
-            // Обновляем текст в модалке
-            const textElement = document.getElementById('modalPostDetailText');
-            textElement.textContent = newText;
+            // Загружаем обновленный пост с сервера
+            return fetch('/api/posts/' + postId + '/detail', {
+                method: 'GET',
+                headers: {
+                    [csrfHeader]: csrfToken
+                }
+            });
+        } else {
+            alert('Ошибка при сохранении поста');
+            throw new Error('Save failed');
+        }
+    })
+    .then(response => response.json())
+    .then(post => {
+        // Обновляем текст в модалке с учетом Markdown
+        const textElement = document.getElementById('modalPostDetailText');
+        if (textElement) {
+            textElement.innerHTML = post.htmlContent || escapeHtml(post.text);
+            // Обновляем класс для Markdown
+            if (post.useMarkdown) {
+                textElement.classList.add('markdown-body');
+            } else {
+                textElement.classList.remove('markdown-body');
+            }
+        }
 
-            // Обновляем текст на странице
-            const postText = document.getElementById('text-' + postId);
-            if (postText) {
-                postText.textContent = newText;
+        // Обновляем скрытое поле в модалке
+        const editElement = document.getElementById('modalEditText');
+        if (editElement) {
+            editElement.value = post.text;
+        }
+
+        // Обновляем текст на странице (в списке постов)
+        const postItem = document.getElementById('post-' + postId);
+        if (postItem) {
+            const postTextContainer = postItem.querySelector('.post-text');
+            if (postTextContainer) {
+                postTextContainer.innerHTML = post.htmlContent || escapeHtml(post.text);
+                // Обновляем класс для Markdown
+                if (post.useMarkdown) {
+                    postTextContainer.classList.add('markdown-body');
+                } else {
+                    postTextContainer.classList.remove('markdown-body');
+                }
+            }
+
+            // Обновляем скрытое поле для редактирования в списке
+            const editTextarea = document.getElementById('edit-' + postId);
+            if (editTextarea) {
+                editTextarea.value = post.text;
             }
 
             // Добавляем отметку (ред.)
             const redactedSpan = document.getElementById('modalPostRedacted');
-            redactedSpan.style.display = 'inline';
-
-            const dateSpan = document.querySelector(`#post-${postId} .post-date`);
-            if (dateSpan && !dateSpan.querySelector('.redacted')) {
-                const redactedInPost = document.createElement('span');
-                redactedInPost.className = 'redacted';
-                redactedInPost.textContent = '(ред.) ';
-                dateSpan.prepend(redactedInPost);
+            if (redactedSpan && post.redacted) {
+                redactedSpan.style.display = 'inline';
             }
 
-            // Возвращаем обычный режим
-            cancelEditFromModal();
-        } else {
-            alert('Ошибка при сохранении поста');
+            const dateSpan = postItem.querySelector('.post-date');
+            if (dateSpan && post.redacted) {
+                let redactedInPost = dateSpan.querySelector('.redacted');
+                if (!redactedInPost) {
+                    redactedInPost = document.createElement('span');
+                    redactedInPost.className = 'redacted';
+                    redactedInPost.textContent = '(ред.) ';
+                    dateSpan.prepend(redactedInPost);
+                }
+            }
         }
+
+        // Возвращаем обычный режим
+        cancelEditFromModal();
     })
     .catch(error => {
         console.error('Error:', error);
         alert('Ошибка при сохранении поста');
     });
+}
+
+/**
+ * Удаление из модального окна
+ */
+function deleteFromModal() {
+    const modal = document.getElementById('postModal');
+    const postId = modal.dataset.postId;
+
+    // Закрываем модальное окно
+    closePostModal();
+
+    // Находим пост в списке
+    const postItem = document.getElementById('post-' + postId);
+    if (!postItem) {
+        console.warn('Post item not found for deletion:', postId);
+        return;
+    }
+
+    // Ищем кнопку удаления в посте
+    const deleteBtn = postItem.querySelector('.btn-delete-dropdown');
+    if (deleteBtn) {
+        // Имитируем клик по кнопке удаления
+        setTimeout(() => {
+            deleteBtn.click();
+        }, 300);
+    } else {
+        // Если кнопка не найдена, используем confirmDelete с переданной кнопкой
+        const dropdownBtn = postItem.querySelector('.dropdown-toggle');
+        if (dropdownBtn) {
+            setTimeout(() => {
+                confirmDelete(dropdownBtn);
+            }, 300);
+        } else {
+            alert('Ошибка: не удалось найти кнопку удаления');
+        }
+    }
 }
 
 /**
@@ -1222,6 +1399,7 @@ function toggleLikeFromModal(event) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Обновляем лайк в модальном окне
             const heartSpan = document.getElementById('modalHeart');
             if (data.action === 'liked') {
                 heartSpan.textContent = '❤️';
@@ -1231,6 +1409,30 @@ function toggleLikeFromModal(event) {
                 heartSpan.classList.remove('liked');
             }
             document.getElementById('modalLikesCount').textContent = data.likesCount;
+
+            // Обновляем лайк на посте в списке
+            const postItem = document.getElementById('post-' + postId);
+            if (postItem) {
+                const likeButton = postItem.querySelector('.btn-like');
+                if (likeButton) {
+                    const heartSpanInList = likeButton.querySelector('.heart');
+                    const likesCountInList = likeButton.querySelector('.likes-count');
+
+                    if (heartSpanInList) {
+                        if (data.action === 'liked') {
+                            heartSpanInList.textContent = '❤️';
+                            heartSpanInList.classList.add('liked');
+                        } else {
+                            heartSpanInList.textContent = '🤍';
+                            heartSpanInList.classList.remove('liked');
+                        }
+                    }
+
+                    if (likesCountInList) {
+                        likesCountInList.textContent = data.likesCount;
+                    }
+                }
+            }
         } else {
             alert(data.message || 'Ошибка при обновлении лайка');
         }
@@ -1239,26 +1441,6 @@ function toggleLikeFromModal(event) {
         console.error('Error:', error);
         alert('Ошибка при обновлении лайка');
     });
-}
-
-/**
- * Удаление из модального окна
- */
-function deleteFromModal() {
-    const modal = document.getElementById('postModal');
-    const postId = modal.dataset.postId;
-    const postItem = document.getElementById('post-' + postId);
-
-    closePostModal();
-
-    setTimeout(() => {
-        const deleteBtn = postItem.querySelector('.btn-delete-dropdown');
-        if (deleteBtn) {
-            deleteBtn.click();
-        } else {
-            confirmDelete(deleteBtn);
-        }
-    }, 300);
 }
 
 // Закрытие модального окна по клику на фон
