@@ -5,6 +5,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "comments_post")
@@ -36,6 +38,9 @@ public class Comment {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LikesComment> likesList = new ArrayList<>();
 
     public Comment() {}
     public Comment(Post post, User author, String text) {
@@ -96,4 +101,14 @@ public class Comment {
     public void setRedacted(Boolean redacted) {
         this.redacted = redacted;
     }
+
+    public List<LikesComment> getLikesList() {
+        return likesList;
+    }
+
+    public void setLikesList(List<LikesComment> likesList) {
+        this.likesList = likesList;
+    }
+
+    public Integer getLikes() { return likesList.size(); }
 }

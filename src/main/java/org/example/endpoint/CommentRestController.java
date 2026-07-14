@@ -2,6 +2,7 @@ package org.example.endpoint;
 
 import org.example.dto.CommentResponseDto;
 import org.example.dto.PostResponseDto;
+import org.example.repository.CommentRepository;
 import org.example.service.CommentService;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
@@ -15,9 +16,11 @@ import java.util.Map;
 public class CommentRestController {
 
     private final CommentService commentService;
+    private final CommentRepository commentRepository;
 
-    public CommentRestController(CommentService commentService) {
+    public CommentRestController(CommentService commentService, CommentRepository commentRepository) {
         this.commentService = commentService;
+        this.commentRepository = commentRepository;
     }
 
     @GetMapping
@@ -29,6 +32,13 @@ public class CommentRestController {
         String currentUserLogin = authentication.getName();
 
         Page< CommentResponseDto> comments = commentService.getComments(page, size, currentUserLogin);
+
+        comments.getContent().forEach(
+                comment -> {
+                    boolean liked = commentRepository.hasUserLiked(comment.getId(), currentUserLogin);
+                    comment.setLikedByCurrentUser(liked);
+                }
+        );
 
         Map<String, Object> response = new HashMap<>();
         response.put("comments", comments.getContent());
@@ -49,8 +59,16 @@ public class CommentRestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
+        String currentUserLogin = authentication.getName();
 
         Page<CommentResponseDto> comments = commentService.getPostComments(postId, page, size);
+
+        comments.getContent().forEach(
+                comment -> {
+                    boolean liked = commentRepository.hasUserLiked(comment.getId(), currentUserLogin);
+                    comment.setLikedByCurrentUser(liked);
+                }
+        );
 
         Map<String, Object> response = new HashMap<>();
         response.put("comments", comments.getContent());

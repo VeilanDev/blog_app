@@ -1347,3 +1347,59 @@ body {
     text-align: center;
     padding: 1rem 0;
 }
+
+/* ==========================================
+   ПОДВАЛ КОММЕНТАРИЯ С ЛАЙКОМ
+   ========================================== */
+
+.comment-footer {
+    display: flex;
+    align-items: center;
+    margin-top: 0.4rem;
+    padding-top: 0.3rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.btn-like-comment {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+}
+
+.btn-like-comment:hover {
+    background: rgba(255, 0, 0, 0.05);
+}
+
+.btn-like-comment .heart {
+    font-size: 0.9rem;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.btn-like-comment .heart.liked {
+    color: #dc3545;
+}
+
+.btn-like-comment:hover .heart {
+    transform: scale(1.1);
+}
+
+.btn-like-comment .likes-count {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #1a1a2e;
+    min-width: 0.8rem;
+    text-align: left;
+    transition: color 0.2s ease;
+}
+
+.btn-like-comment:hover .likes-count {
+    color: #dc3545;
+}

@@ -12,6 +12,8 @@ public class CommentResponseDto {
     private LocalDateTime updatedAt;
     private Boolean redacted;
     private Boolean isAuthor;
+    private Integer likes;
+    private Boolean likedByCurrentUser;
 
     public CommentResponseDto(
             Long id,
@@ -21,7 +23,8 @@ public class CommentResponseDto {
             String text,
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
-            Boolean redacted
+            Boolean redacted,
+            Integer likes
     ) {
         this.id = id;
         this.postId = postId;
@@ -32,6 +35,8 @@ public class CommentResponseDto {
         this.updatedAt = updatedAt;
         this.redacted = redacted;
         this.isAuthor = false;
+        this.likes = likes;
+        this.likedByCurrentUser = false;
     }
 
     public Long getId() {
@@ -104,5 +109,21 @@ public class CommentResponseDto {
 
     public void setAuthor(Boolean author) {
         isAuthor = author;
+    }
+
+    public Integer getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Integer likes) {
+        this.likes = likes;
+    }
+
+    public Boolean getLikedByCurrentUser() {
+        return likedByCurrentUser;
+    }
+
+    public void setLikedByCurrentUser(Boolean likedByCurrentUser) {
+        this.likedByCurrentUser = likedByCurrentUser;
     }
 }

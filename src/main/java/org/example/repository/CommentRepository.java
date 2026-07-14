@@ -8,11 +8,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     Optional<Comment> findByPost(Post post);
@@ -27,7 +29,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
                     "u.name, u.login, " +
                     "c.text, " +
                     "c.createdAt, c.updatedAt, " +
-                    "c.redacted) " +
+                    "c.redacted, " +
+                    "SIZE(c.likesList)) " +
                     "FROM Comment c " +
                     "JOIN c.author u " +
                     "JOIN c.post p " +
@@ -41,7 +44,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
                     "u.name, u.login, " +
                     "c.text, " +
                     "c.createdAt, c.updatedAt, " +
-                    "c.redacted ) " +
+                    "c.redacted," +
+                    "SIZE(c.likesList) ) " +
                     "FROM Comment c " +
                     "JOIN c.author u " +
                     "JOIN c.post p " +
@@ -57,7 +61,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
                     "u.name, u.login, " +
                     "c.text, " +
                     "c.createdAt, c.updatedAt, " +
-                    "c.redacted) " +
+                    "c.redacted, " +
+                    "SIZE(c.likesList)) " +
                     "FROM Comment c " +
                     "JOIN c.author u " +
                     "JOIN c.post p " +
@@ -68,4 +73,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("SELECT c FROM Comment c WHERE c.id = :id AND c.author.login = :login")
     Optional<Comment> findByIdAndAuthorLogin(@Param("id") Long id, @Param("login") String login);
+
+    @Query("SELECT COUNT(lc) > 0 FROM LikesComment lc WHERE lc.comment.id = :commentId AND lc.user.login = :login")
+    Boolean hasUserLiked(@Param("commentId") Long commentId, @Param("login") String login);
 }

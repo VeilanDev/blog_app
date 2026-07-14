@@ -718,6 +718,7 @@ function createCommentElement(comment) {
 
     const redactedHtml = comment.redacted ? '<span class="comment-redacted">(ред.)</span> ' : '';
     const showDropdown = comment.isAuthor;
+    const heart = comment.likedByCurrentUser ? '❤️' : '🤍';
 
     // Экранируем текст комментария
     const escapedText = escapeHtml(comment.text);
@@ -757,10 +758,58 @@ function createCommentElement(comment) {
                 <button class="btn-save-comment" onclick="saveComment(${comment.id})">Сохранить</button>
                 <button class="btn-cancel-comment" onclick="cancelEditComment(${comment.id})">Отмена</button>
             </div>
+
+            <div class="comment-footer">
+                <button class="btn-like-comment"
+                        data-comment-id="${comment.id}"
+                        onclick="event.stopPropagation(); toggleLikeComment(this)">
+                    <span class="heart ${comment.likedByCurrentUser ? 'liked' : ''}">${heart}</span>
+                    <span class="likes-count">${comment.likes || 0}</span>
+                </button>
+            </div>
         </div>
     `;
 }
 
+/**
+ * Поставить/убрать лайк комментария
+ */
+function toggleLikeComment(button) {
+    const commentId = button.dataset.commentId;
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    fetch('/comments/' + commentId + '/like', {
+        method: 'POST',
+        headers: {
+            [csrfHeader]: csrfToken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Обновляем иконку
+            const heartSpan = button.querySelector('.heart');
+            if (data.action === 'liked') {
+                heartSpan.textContent = '❤️';
+                heartSpan.classList.add('liked');
+            } else {
+                heartSpan.textContent = '🤍';
+                heartSpan.classList.remove('liked');
+            }
+
+            // Обновляем счетчик
+            const countSpan = button.querySelector('.likes-count');
+            countSpan.textContent = data.likesCount;
+        } else {
+            alert(data.message || 'Ошибка при обновлении лайка');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при обновлении лайка');
+    });
+}
 
 /**
  * Переключение выпадающего меню комментария
