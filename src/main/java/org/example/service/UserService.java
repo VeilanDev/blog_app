@@ -22,4 +22,14 @@ public class UserService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         return userRepository.findAllUsers(pageable);
     }
+
+    public Page<UserResponseDto> searchUsers(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        if (query == null || query.trim().isEmpty()) {
+            return userRepository.findAllUsers(pageable);
+        }
+
+        return userRepository.searchUsers(query.trim(), pageable);
+    }
 }

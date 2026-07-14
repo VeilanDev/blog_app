@@ -8,6 +8,9 @@ const USERS_PER_PAGE = 10;
 let currentPage = 0;
 let isLoading = false;
 let hasMore = true;
+let searchQuery = '';
+let isSearching = false;
+let searchTimeout = null;
 
 const currentUserLogin = document.querySelector('meta[name="currentUserLogin"]')?.content || '';
 
@@ -23,7 +26,14 @@ function loadMoreUsers() {
     const csrfToken = document.querySelector('meta[name="_csrf"]').content;
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
-    fetch(`/api/users?page=${currentPage}&size=${USERS_PER_PAGE}`, {
+    let url = `/api/users?page=${currentPage}&size=${USERS_PER_PAGE}`;
+
+    // Если есть поисковый запрос — добавляем его в URL
+    if (searchQuery && searchQuery.trim()) {
+        url += `&query=${encodeURIComponent(searchQuery.trim())}`;
+    }
+
+    fetch(url, {
         method: 'GET',
         headers: {
             [csrfHeader]: csrfToken
@@ -46,7 +56,11 @@ function loadMoreUsers() {
             }
         } else {
             hasMore = false;
-            showNoMoreUsers();
+            if (currentPage === 0) {
+                showNoUsersFound();
+            } else {
+                showNoMoreUsers();
+            }
         }
 
         isLoading = false;
@@ -60,6 +74,56 @@ function loadMoreUsers() {
 }
 
 /**
+ * Поиск пользователей с debounce (задержка 500ms)
+ */
+function searchUsers(query) {
+    searchQuery = query;
+
+    // Отменяем предыдущий таймер
+    if (searchTimeout) {
+        clearTimeout(searchTimeout);
+    }
+
+     if (!searchQuery || !searchQuery.trim()) {
+        searchTimeout = setTimeout(() => {
+            clearSearch();
+        }, 300); // Небольшая задержка для плавности
+        return;
+    }
+
+    // Устанавливаем новый таймер
+    searchTimeout = setTimeout(() => {
+        performSearch();
+    }, 500);
+}
+
+/**
+ * Выполнение поиска
+ */
+function performSearch() {
+    // Сбрасываем пагинацию
+    currentPage = 0;
+    hasMore = true;
+    isSearching = true;
+
+    // Очищаем список
+    const usersList = document.querySelector('.users-list');
+    if (usersList) {
+        usersList.innerHTML = '';
+    }
+
+    // Скрываем старые сообщения
+    const noMore = document.getElementById('noMoreUsers');
+    if (noMore) noMore.style.display = 'none';
+
+    const noResults = document.getElementById('noResults');
+    if (noResults) noResults.remove();
+
+    // Загружаем первую страницу
+    loadMoreUsers();
+}
+
+/**
  * Создание HTML для одного пользователя
  */
 function createUserElement(user) {
@@ -69,16 +133,11 @@ function createUserElement(user) {
 
     return `
         <li>
-            <!-- Клик на всю карточку → переход в профиль -->
             <div class="user-item" onclick="window.location.href='/home/${escapeHtml(user.login)}'">
-                <div class="user-avatar" hidden>
-                    <span class="avatar-placeholder">${displayName.charAt(0).toUpperCase()}</span>
-                </div>
                 <div class="user-info">
                     <div class="user-name">${escapeHtml(displayName)}${currentUserLabel}</div>
                     <div class="user-login">${escapeHtml(user.login)}</div>
                 </div>
-                <!-- Кнопка удалена, переход осуществляется по клику на всю карточку -->
             </div>
         </li>
     `;
@@ -104,7 +163,10 @@ function showLoadingIndicator() {
         indicator.id = 'loadingIndicator';
         indicator.className = 'loading-indicator';
         indicator.textContent = 'Загрузка...';
-        document.querySelector('.users-list').parentNode.appendChild(indicator);
+        const list = document.querySelector('.users-list');
+        if (list && list.parentNode) {
+            list.parentNode.appendChild(indicator);
+        }
     }
     indicator.style.display = 'block';
 }
@@ -129,9 +191,62 @@ function showNoMoreUsers() {
         noMore.id = 'noMoreUsers';
         noMore.className = 'no-more-users';
         noMore.textContent = 'Конец списка пользователей';
-        document.querySelector('.users-list').parentNode.appendChild(noMore);
+        const list = document.querySelector('.users-list');
+        if (list && list.parentNode) {
+            list.parentNode.appendChild(noMore);
+        }
     }
     noMore.style.display = 'block';
+}
+
+/**
+ * Показывает сообщение "Пользователи не найдены"
+ */
+function showNoUsersFound() {
+    let noResults = document.getElementById('noResults');
+    if (!noResults) {
+        noResults = document.createElement('div');
+        noResults.id = 'noResults';
+        noResults.className = 'no-results';
+        noResults.textContent = 'Пользователи не найдены';
+        const list = document.querySelector('.users-list');
+        if (list && list.parentNode) {
+            list.parentNode.appendChild(noResults);
+        }
+    }
+    noResults.style.display = 'block';
+}
+
+/**
+ * Очистка поиска (показывает всех пользователей)
+ */
+function clearSearch() {
+    searchQuery = '';
+    currentPage = 0;
+    hasMore = true;
+    isSearching = false;
+
+    // Отменяем таймер, если был
+    if (searchTimeout) {
+        clearTimeout(searchTimeout);
+        searchTimeout = null;
+    }
+
+    // Очищаем список
+    const usersList = document.querySelector('.users-list');
+    if (usersList) {
+        usersList.innerHTML = '';
+    }
+
+    // Скрываем старые сообщения
+    const noMore = document.getElementById('noMoreUsers');
+    if (noMore) noMore.style.display = 'none';
+
+    const noResults = document.getElementById('noResults');
+    if (noResults) noResults.remove();
+
+    // Загружаем всех пользователей
+    loadMoreUsers();
 }
 
 /**
@@ -148,6 +263,25 @@ document.addEventListener('scroll', function() {
             loadMoreUsers();
         }
     }, 100);
+});
+
+// Добавляем обработчик клавиши Enter для мгновенного поиска
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        const input = document.getElementById('searchInput');
+        if (document.activeElement === input) {
+            // Отменяем таймер и выполняем поиск сразу
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+                searchTimeout = null;
+            }
+            if (!searchQuery || !searchQuery.trim()) {
+                clearSearch();
+            } else {
+                performSearch();
+            }
+        }
+    }
 });
 
 // Инициализация: загрузка первой порции пользователей

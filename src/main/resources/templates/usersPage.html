@@ -40,6 +40,14 @@
 
   <div class="page-title">Все пользователи</div>
 
+  <div class="search-container">
+    <input type="text"
+           id="searchInput"
+           class="search-input"
+           placeholder="Поиск по имени или логину..."
+           oninput="searchUsers(this.value)">
+  </div>
+
   <ul class="users-list">
     <!-- Пользователи добавляются через JavaScript -->
   </ul>

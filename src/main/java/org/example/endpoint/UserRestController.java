@@ -24,9 +24,16 @@ public class UserRestController {
     @GetMapping
     public Map<String, Object> getUsers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "30") int size
+            @RequestParam(defaultValue = "30") int size,
+            @RequestParam(required = false) String query
     ) {
-        Page<UserResponseDto> users = userService.getUsers(page, size);
+        Page<UserResponseDto> users;
+
+        if (query != null && !query.trim().isEmpty()) {
+            users = userService.searchUsers(query.trim(), page, size);
+        } else {
+            users = userService.getUsers(page, size);
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("users", users.getContent());
