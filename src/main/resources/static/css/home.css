@@ -528,7 +528,7 @@ body {
 .post-footer-left {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: 0.2rem;
 }
 
 .post-footer-right {
@@ -967,6 +967,7 @@ body {
 .post-modal-footer-left {
     display: flex;
     align-items: center;
+    gap: 0.2rem;
 }
 
 .post-modal-footer-right {
@@ -1402,4 +1403,34 @@ body {
 
 .btn-like-comment:hover .likes-count {
     color: #dc3545;
+}
+
+/* ==========================================
+   СЧЕТЧИК КОММЕНТАРИЕВ
+   ========================================== */
+
+.post-comments-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: #6b6b80;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+}
+
+.post-comments-count:hover {
+    color: #4a6cf7;
+    background: rgba(74, 108, 247, 0.05);
+}
+
+.post-comments-count span {
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.post-comments-count:hover span {
+    color: #4a6cf7;
 }

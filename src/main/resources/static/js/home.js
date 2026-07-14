@@ -501,6 +501,9 @@ function createPostElement(post) {
                             <span class="heart ${post.likedByCurrentUser ? 'liked' : ''}">${heart}</span>
                             <span class="likes-count">${post.likes || 0}</span>
                         </button>
+                        <span class="post-comments-count" onclick="event.stopPropagation(); openPostModal(${post.id})">
+                            💬 <span>${post.comments || 0}</span>
+                        </span>
                     </div>
                      ${showDropdown ? `
                     <div class="post-footer-right" onclick="event.stopPropagation();">
@@ -1053,6 +1056,9 @@ function openPostModal(postId) {
             heartSpan.classList.remove('liked');
         }
         document.getElementById('modalLikesCount').textContent = post.likes || 0;
+
+         // Количество комментариев
+        document.getElementById('modalCommentsCountValue').textContent = post.commentsCount || 0;
 
         // Сохраняем ID поста
         document.getElementById('postModal').dataset.postId = postId;

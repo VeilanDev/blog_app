@@ -36,7 +36,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                     "u.name, u.login, " +
                     "p.createdAt, p.updatedAt, " +
                     "p.redacted, " +
-                    "SIZE(p.likesList)) " +
+                    "SIZE(p.likesList)," +
+                    "SIZE(p.commentsList)) " +
                     "FROM Post p " +
                     "JOIN p.author u " +
                     "ORDER BY p.createdAt DESC"
@@ -50,7 +51,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                     "u.name, u.login, " +
                     "p.createdAt, p.updatedAt, " +
                     "p.redacted, " +
-                    "SIZE(p.likesList))" +
+                    "SIZE(p.likesList), " +
+                    "SIZE(p.commentsList))" +
                     "FROM Post p " +
                     "JOIN p.author u " +
                     "WHERE u.id = :userId " +
@@ -68,7 +70,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                     "u.name, u.login, " +
                     "p.createdAt, p.updatedAt, " +
                     "p.redacted, " +
-                    "SIZE(p.likesList)) " +
+                    "SIZE(p.likesList), " +
+                    "SIZE(p.commentsList)) " +
                     "FROM Post p " +
                     "JOIN p.author u " +
                     "WHERE p.id = :postId"

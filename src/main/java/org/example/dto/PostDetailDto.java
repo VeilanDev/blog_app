@@ -15,6 +15,7 @@ public class PostDetailDto {
     private Integer likes;
     private Boolean likedByCurrentUser;
     private Boolean isAuthor;
+    private Integer commentsCount;
     private List<CommentResponseDto> comments;
 
     public PostDetailDto() {}
@@ -27,7 +28,8 @@ public class PostDetailDto {
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
             Boolean redacted,
-            Integer likes
+            Integer likes,
+            Integer commentsCount
     ) {
         this.id = id;
         this.text = text;
@@ -41,6 +43,7 @@ public class PostDetailDto {
         this.likedByCurrentUser = false;
         this.isAuthor = false;
         this.comments = List.of();
+        this.commentsCount = commentsCount;
     }
 
     public Long getId() { return id; }
@@ -83,5 +86,12 @@ public class PostDetailDto {
     }
     public void setComments(List<CommentResponseDto> comments) {
         this.comments = comments;
+    }
+
+    public Integer getCommentsCount() {
+        return commentsCount;
+    }
+    public void setCommentsCount(Integer commentsCount) {
+        this.commentsCount = commentsCount;
     }
 }

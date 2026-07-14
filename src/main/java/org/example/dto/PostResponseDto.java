@@ -13,6 +13,7 @@ public class PostResponseDto {
     private Boolean redacted;
     private Integer likes;
     private Boolean likedByCurrentUser;
+    private Integer comments;
 
     public PostResponseDto() {}
     public PostResponseDto(
@@ -24,7 +25,8 @@ public class PostResponseDto {
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
             Boolean redacted,
-            Integer likes
+            Integer likes,
+            Integer comments
     ) {
         this.id = id;
         this.text = text;
@@ -35,6 +37,7 @@ public class PostResponseDto {
         this.updatedAt = updatedAt;
         this.redacted = redacted;
         this.likes = likes;
+        this.comments = comments;
         this.likedByCurrentUser = false;
     }
     public PostResponseDto(
@@ -47,7 +50,8 @@ public class PostResponseDto {
             LocalDateTime updatedAt,
             Boolean redacted,
             Integer likes,
-            Boolean likedByCurrentUser
+            Boolean likedByCurrentUser,
+            Integer comments
     ) {
         this.id = id;
         this.text = text;
@@ -59,6 +63,7 @@ public class PostResponseDto {
         this.redacted = redacted;
         this.likes = likes;
         this.likedByCurrentUser = likedByCurrentUser;
+        this.comments = comments;
     }
 
     public Long getId() {
@@ -139,5 +144,13 @@ public class PostResponseDto {
 
     public void setLikedByCurrentUser(Boolean likedByCurrentUser) {
         this.likedByCurrentUser = likedByCurrentUser;
+    }
+
+    public Integer getComments() {
+        return comments;
+    }
+
+    public void setComments(Integer comments) {
+        this.comments = comments;
     }
 }
