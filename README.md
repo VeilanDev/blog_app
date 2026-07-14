@@ -1,8 +1,6 @@
 # Приложение для введения блога
 
 ---
-
----
 # Требования
 
 ---
@@ -80,6 +78,8 @@
 |     | likes                |          |
 |     | created_at           |          |
 |     | updated_at           |          |
+|     | redacted             | not null |
+|     | use_markdown         | not null |
 
 ### likes_posts
 
@@ -97,6 +97,14 @@
 |     | text       | not null |
 |     | created_at |          |
 |     | updated_at |          |
+
+### likes_comments
+
+| PK  | id         |     |
+| :-: | ---------- | --- |
+| FK  | comment_id |     |
+| FK  | user_id    |     |
+
 
 ---
 
