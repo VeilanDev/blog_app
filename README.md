@@ -71,9 +71,9 @@
 ### posts
 
 | PK  | id                   |          |
-| :-: | :------------------- | :------- |
+| :-: |:---------------------| :------- |
 |     | text                 | not null |
-|     | image_path           |          |
+|     | image_url            |          |
 | FK  | author_id (users.id) |          |
 |     | likes                |          |
 |     | created_at           |          |
