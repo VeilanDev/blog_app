@@ -466,9 +466,10 @@ function createPostElement(post) {
         <li>
             <!-- Клик на весь пост открывает модалку, но кнопки перехватывают событие -->
             <div class="post-item" id="post-${post.id}" onclick="openPostModal(${post.id})">
-                <div class="post-header">
-                    <span class="post-author">${post.authorName || post.authorLogin}</span>
-                    <div class="post-header-right">
+                <div class="post-modal-header">
+                    <span class="post-author">${post.authorName}</span>
+                    <span class="post-modal-login">${post.authorLogin}</span>
+                    <div class="post-modal-date-group">
                         <span class="post-date">
                             ${markdownHtml}
                             ${redactedHtml}
