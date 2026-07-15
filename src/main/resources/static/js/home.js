@@ -495,7 +495,11 @@ function createPostElement(post) {
                     <div class="post-text ${post.useMarkdown ? 'markdown-body' : ''}">${contentHtml}</div>
                     <textarea class="post-edit-textarea" id="edit-${post.id}" style="display: none;">${post.text}</textarea>
                 </div>
-                ${post.imagePath ? `<div class="post-image" onclick="event.stopPropagation();"><img src="${post.imagePath}" alt="Изображение к посту" /></div>` : ''}
+                ${post.imageUrl ? `
+                    <div class="post-image" onclick="event.stopPropagation();">
+                        <img src="${post.imageUrl}" alt="Изображение к посту" />
+                    </div>
+                ` : ''}
                 <div class="post-footer" onclick="event.stopPropagation();">
                     <div class="post-footer-left">
                         <button class="btn-like"
@@ -1124,14 +1128,18 @@ function openPostModal(postId) {
         document.getElementById('modalEditText').style.display = 'none';
         document.getElementById('modalPostDetailText').style.display = 'block';
 
-        // Изображение
+        // ИЗОБРАЖЕНИЕ
         const imageContainer = document.getElementById('modalPostImage');
         const imageSrc = document.getElementById('modalPostImageSrc');
-        if (post.imagePath) {
+
+        if (post.imageUrl && post.imageUrl.trim() !== '') {
             imageContainer.style.display = 'block';
-            imageSrc.src = post.imagePath;
+            imageSrc.src = post.imageUrl;
+            imageSrc.alt = 'Изображение к посту';
         } else {
             imageContainer.style.display = 'none';
+            imageSrc.src = '';
+            imageSrc.alt = '';
         }
 
         // Лайк
@@ -1457,3 +1465,69 @@ document.addEventListener('keydown', function(event) {
         closePostModal();
     }
 });
+
+/**
+ * Предпросмотр изображения перед загрузкой
+ */
+function previewImage(input) {
+    const preview = document.getElementById('imagePreview');
+    const placeholder = preview.querySelector('.image-upload-placeholder');
+    const removeBtn = document.getElementById('removeImageBtn');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            // Удаляем старое изображение, если есть
+            const oldImg = preview.querySelector('img');
+            if (oldImg) {
+                oldImg.remove();
+            }
+
+            // Создаем новое изображение
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.display = 'block';
+            preview.appendChild(img);
+
+            // Скрываем плейсхолдер
+            if (placeholder) {
+                placeholder.style.display = 'none';
+            }
+
+            // Показываем кнопку удаления
+            if (removeBtn) {
+                removeBtn.style.display = 'inline-flex';
+            }
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+/**
+ * Удаление выбранного изображения
+ */
+function removeImage() {
+    const input = document.getElementById('postImage');
+    const preview = document.getElementById('imagePreview');
+    const placeholder = preview.querySelector('.image-upload-placeholder');
+    const removeBtn = document.getElementById('removeImageBtn');
+
+    // Очищаем input
+    input.value = '';
+
+    // Удаляем изображение из превью
+    const img = preview.querySelector('img');
+    if (img) {
+        img.remove();
+    }
+
+    // Показываем плейсхолдер
+    if (placeholder) {
+        placeholder.style.display = 'flex';
+    }
+
+    // Скрываем кнопку удаления
+    removeBtn.style.display = 'none';
+}

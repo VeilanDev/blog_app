@@ -6,7 +6,7 @@ public class PostResponseDto {
     private Long id;
     private String text;
     private String htmlContent;
-    private String imagePath;
+    private String imageUrl;
     private String authorName;
     private String authorLogin;
     private LocalDateTime createdAt;
@@ -22,7 +22,7 @@ public class PostResponseDto {
             Long id,
             String text,
             String htmlContent,
-            String imagePath,
+            String imageUrl,
             String authorName,
             String authorLogin,
             LocalDateTime createdAt,
@@ -35,7 +35,7 @@ public class PostResponseDto {
         this.id = id;
         this.text = text;
         this.htmlContent = htmlContent;
-        this.imagePath = imagePath;
+        this.imageUrl = imageUrl;
         this.authorName = authorName;
         this.authorLogin = authorLogin;
         this.createdAt = createdAt;
@@ -50,7 +50,7 @@ public class PostResponseDto {
             Long id,
             String text,
             String htmlContent,
-            String imagePath,
+            String imageUrl,
             String authorName,
             String authorLogin,
             LocalDateTime createdAt,
@@ -64,7 +64,7 @@ public class PostResponseDto {
         this.id = id;
         this.text = text;
         this.htmlContent = htmlContent;
-        this.imagePath = imagePath;
+        this.imageUrl = imageUrl;
         this.authorName = authorName;
         this.authorLogin = authorLogin;
         this.createdAt = createdAt;
@@ -92,12 +92,12 @@ public class PostResponseDto {
         this.text = text;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getAuthorName() {

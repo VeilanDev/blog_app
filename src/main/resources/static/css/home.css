@@ -258,8 +258,15 @@ body {
     font-size: 0.9rem;
 }
 
-.new-post-form .btn-submit {
-    padding: 0.6rem 2rem;
+/* ==========================================
+   КНОПКА ОПУБЛИКОВАТЬ С ИКОНКОЙ
+   ========================================== */
+
+.btn-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 2rem;
     background: #4a6cf7;
     color: #ffffff;
     border: none;
@@ -270,14 +277,18 @@ body {
     transition: all 0.25s ease;
 }
 
-.new-post-form .btn-submit:hover {
+.btn-submit:hover {
     background: #3a5cd9;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(74, 108, 247, 0.3);
 }
 
-.new-post-form .btn-submit:active {
+.btn-submit:active {
     transform: scale(0.97);
+}
+
+.btn-submit svg {
+    flex-shrink: 0;
 }
 
 /* ==========================================
@@ -1617,4 +1628,138 @@ body {
     color: #6b6b80;
     margin-left: 2.2rem;
     font-weight: 400;
+}
+
+/* ==========================================
+   ЗАГРУЗКА ИЗОБРАЖЕНИЙ
+   ========================================== */
+
+.image-upload-group {
+    margin: 0.5rem 0 0.8rem 0;
+}
+
+.image-upload-group label {
+    display: block;
+    font-weight: 600;
+    color: #1a1a2e;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+}
+
+.image-upload-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem;
+    background: #f8f9fa;
+    border: 1.5px dashed #d0d0d0;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+}
+
+.image-upload-wrapper:hover {
+    border-color: #4a6cf7;
+    background: #f0f3ff;
+}
+
+.image-upload-preview {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.image-upload-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.image-upload-placeholder {
+    font-size: 2rem;
+    color: #b0b0b0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-upload-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+}
+
+.btn-image-upload {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #4a6cf7;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    width: fit-content;
+}
+
+.btn-image-upload:hover {
+    background: #3a5cd9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 108, 247, 0.3);
+}
+
+.btn-image-upload:active {
+    transform: scale(0.97);
+}
+
+.btn-image-upload svg {
+    flex-shrink: 0;
+}
+
+.btn-image-remove {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    background: transparent;
+    color: #dc3545;
+    border: 1.5px solid #dc3545;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    width: fit-content;
+}
+
+.btn-image-remove:hover {
+    background: #dc3545;
+    color: #ffffff;
+}
+
+.btn-image-remove:active {
+    transform: scale(0.97);
+}
+
+.btn-image-remove svg {
+    flex-shrink: 0;
+}
+
+.form-hint {
+    font-size: 0.8rem;
+    color: #6b6b80;
+    margin-top: 0.3rem;
+    display: block;
 }

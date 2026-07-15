@@ -7,7 +7,7 @@ public class PostDetailDto {
     private Long id;
     private String text;
     private String htmlContent;
-    private String imagePath;
+    private String imageUrl;
     private String authorName;
     private String authorLogin;
     private LocalDateTime createdAt;
@@ -24,7 +24,7 @@ public class PostDetailDto {
     public PostDetailDto(
             Long id,
             String text,
-            String imagePath,
+            String imageUrl,
             String authorName,
             String authorLogin,
             LocalDateTime createdAt,
@@ -36,7 +36,7 @@ public class PostDetailDto {
     ) {
         this.id = id;
         this.text = text;
-        this.imagePath = imagePath;
+        this.imageUrl = imageUrl;
         this.authorName = authorName;
         this.authorLogin = authorLogin;
         this.createdAt = createdAt;
@@ -57,8 +57,8 @@ public class PostDetailDto {
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }
 
-    public String getImagePath() { return imagePath; }
-    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public String getAuthorName() { return authorName; }
     public void setAuthorName(String authorName) { this.authorName = authorName; }

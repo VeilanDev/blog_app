@@ -21,8 +21,8 @@ public class Post {
     @Column(name = "text", nullable = false, length = 4096)
     private String text;
 
-    @Column(name = "image_path", length = 512)
-    private String imagePath;
+    @Column(name = "image_url", length = 512)
+    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
@@ -49,9 +49,9 @@ public class Post {
     private List<Comment> commentsList = new ArrayList<>();
 
     public Post() {}
-    public Post(String text, String imagePath) {
+    public Post(String text, String imageUrl) {
         this.text = text;
-        this.imagePath = imagePath;
+        this.imageUrl = imageUrl;
         this.createdAt = LocalDateTime.now();
     }
 
@@ -75,8 +75,8 @@ public class Post {
         return text;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public List<LikesPost> getLikesList() {
@@ -103,8 +103,8 @@ public class Post {
         this.text = text;
     }
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {

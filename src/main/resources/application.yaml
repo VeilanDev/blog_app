@@ -66,3 +66,12 @@ spring:
     cache: false #в продакшене менять на true
     encoding: UTF-8
     mode: HTML
+
+# ============================================
+# НАСТРОЙКИ MINIO
+# ============================================
+minio:
+  endpoint: http://localhost:9000  # Адрес MinIO сервера
+  access-key: minioadmin           # Ключ доступа (из консоли MinIO)
+  secret-key: minioadmin           # Секретный ключ
+  bucket-name: blog-images         # Название бакета для изображений
