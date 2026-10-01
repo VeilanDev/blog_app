@@ -2,8 +2,8 @@
 
 ---
 
-<img width="1857" height="989" alt="mYY-9QF-tHOEHwFpAiSETiReZabYyZvxBOqSvlU2CSWcdo2hpLb0IAWa897Zoue5uEbc5iYWj_Cf2PICe5s4OFuOAWGOyg" src="https://github.com/user-attachments/assets/516685af-b340-415e-94bc-799bee11cc7b" />
 <img width="1855" height="990" alt="pPdGILO0Jd3Ik85vJspRvkdpvNrk9RdnY1YU3G5g3ivzDDUuDbeieihaVNSKZWbN8KORvuOr7DBsS_Aj3yMLqWmk" src="https://github.com/user-attachments/assets/9af26a43-24f9-4d83-a0e4-bf9e2a9eb6cf" />
+<img width="1857" height="989" alt="mYY-9QF-tHOEHwFpAiSETiReZabYyZvxBOqSvlU2CSWcdo2hpLb0IAWa897Zoue5uEbc5iYWj_Cf2PICe5s4OFuOAWGOyg" src="https://github.com/user-attachments/assets/516685af-b340-415e-94bc-799bee11cc7b" />
 
 ---
 # Требования
